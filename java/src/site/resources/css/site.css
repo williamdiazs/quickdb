@@ -1,0 +1,162 @@
+body {
+  padding: 0px 0px 10px 0px;
+}
+body, td, select, input, li{
+  font-family: Verdana, Helvetica, Arial, sans-serif;
+  font-size: 13px;
+}
+code{
+  font-family: Courier, monospace;
+  font-size: 13px;
+}
+a {
+  text-decoration: none;
+}
+a:link {
+  color:#416ed7;
+}
+a:visited  {
+  color:#47a;
+}
+a:active, a:hover {
+  color:#69c;
+}
+#legend li.externalLink {
+  background: url(../images/external.png) left top no-repeat;
+  padding-left: 18px;
+}
+a.externalLink, a.externalLink:link, a.externalLink:visited, a.externalLink:active, a.externalLink:hover {
+  background: url(../images/external.png) right center no-repeat;
+  padding-right: 18px;
+}
+#legend li.newWindow {
+  background: url(../images/newwindow.png) left top no-repeat;
+  padding-left: 18px;
+}
+a.newWindow, a.newWindow:link, a.newWindow:visited, a.newWindow:active, a.newWindow:hover {
+  background: url(../images/newwindow.png) right center no-repeat;
+  padding-right: 18px;
+}
+#navcolumn li.expanded {
+  color: #fff;
+  background-image: url(../images/expanded.gif);
+}
+#navcolumn li.collapsed {
+  color: #fff;
+  background-image: url(../images/collapsed.gif);
+}
+h2 {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #000;
+  color: #039;
+  background-color: #d2d4c2;
+  font-weight:900;
+  font-size: x-large;
+}
+h3 {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #000;
+  color: #039;
+  background-color: #d2d4c2;
+  font-weight: normal;
+  font-size: large;
+}
+h4 {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #000;
+  color: #039;
+  background-color: #d2d4c2;
+  font-weight: normal;
+  font-size: large;
+}
+h5 {
+  padding: 4px 4px 4px 6px;
+  color: #039;
+  font-size: normal;
+}
+p {
+  line-height: 1.3em;
+  font-size: medium;
+}
+#breadcrumbs {
+  margin-top: 10px;
+  border-top: 1px solid #000;
+  border-bottom: 1px solid #000;
+  background-color: #d2d4c2;
+  font-size: 1em;
+}
+#leftColumn {
+  margin: 10px 0 0 5px;
+  border: 1px solid #000;
+  background-color: #d2d4c2;
+}
+#navcolumn h5 {
+  font-size: smaller;
+  border-bottom: 1px solid #aaaaaa;
+  padding-top: 2px;
+  color: #000;
+}
+#navcolumn li a
+{
+	color: black;
+}
+#navcolumn li a:hover
+{
+	color: #66b5ff;
+}
+table.bodyTable th {
+  color: white;
+  background-color: #d2d4c2;
+  text-align: left;
+  font-weight: bold;
+}
+
+table.bodyTable th, table.bodyTable td {
+  font-size: 1em;
+}
+
+table.bodyTable tr.a {
+  background-color: #ddd;
+}
+
+table.bodyTable tr.b {
+  background-color: #eee;
+}
+
+.source {
+  border: 1px solid #999;
+}
+dl {
+  padding: 4px 4px 4px 6px;
+  border: 1px solid #aaa;
+  background-color: #ffc;
+}
+dt {
+  color: #900;
+}
+#organizationLogo img, #projectLogo img, #projectLogo span{
+  margin: 10px;
+}
+#banner {
+  margin-top: 5px;
+  text-align: center;
+  background: url(../images/quickDBLogo.png) no-repeat;
+  border-bottom: 5px solid #FFF;
+  color: #039;
+  padding: 3px;
+}
+.errormark, .warningmark, .donemark, .infomark {
+  background: url(../images/icon_error_sml.gif) no-repeat;
+}
+
+.warningmark {
+  background-image: url(../images/icon_warning_sml.gif);
+}
+
+.donemark {
+  background-image: url(../images/icon_success_sml.gif);
+}
+
+.infomark {
+  background-image: url(../images/icon_info_sml.gif);
+}
