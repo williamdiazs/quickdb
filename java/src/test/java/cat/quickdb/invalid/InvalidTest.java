@@ -39,7 +39,7 @@ public class InvalidTest {
 
         Assert.assertEquals(0, inv.getId());
 
-        Assert.assertFalse(admin.obtain(inv).where("name").equal("diego").find());
+        Assert.assertFalse(admin.obtain(inv).If("name").equal("diego").find());
     }
 
     @Test

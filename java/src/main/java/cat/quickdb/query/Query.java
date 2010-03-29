@@ -18,7 +18,7 @@ public class Query implements IQuery {
     private Object object;
     private String table;
 
-    private Query(AdminBase admin, Object object) {
+    protected Query(AdminBase admin, Object object) {
         this.admin = admin;
         this.object = object;
         this.reflec = new ReflectionUtilities();
@@ -60,7 +60,7 @@ public class Query implements IQuery {
         this.object = obj;
     }
 
-    public Where where(String field, Object... clazz) {
+    public Where If(String field, Object... clazz) {
         if (this.where == null) {
             this.where = Where.createWhere(this);
         }
@@ -122,7 +122,7 @@ public class Query implements IQuery {
         return this;
     }
 
-    public Where whereGroup(String field, Class... clazz) {
+    public Where ifGroup(String field, Class... clazz) {
         if (this.groupby != null) {
             this.having = Where.createWhere(this);
             this.groupby.append(" HAVING ");
@@ -131,6 +131,26 @@ public class Query implements IQuery {
         }
 
         return this.having;
+    }
+
+    public Query anyElement(){
+        if (this.having == null) {
+            this.where.addCondition("ANY");
+        } else {
+            this.having.addCondition("ANY");
+        }
+
+        return this;
+    }
+
+    public Query allElements(){
+        if (this.having == null) {
+            this.where.addCondition("ALL");
+        } else {
+            this.having.addCondition("ALL");
+        }
+
+        return this;
     }
 
     public Query sort(boolean asc, String fields, Class... clazz) {

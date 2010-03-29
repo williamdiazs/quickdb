@@ -86,7 +86,7 @@ public class QueryTest {
     public void testSimpleObtain(){
         //single case: atribute from class
         UserQuery user = new UserQuery();
-        admin.obtain(user).where("name").equal("son name").find();
+        admin.obtain(user).If("name").equal("son name").find();
 
         Assert.assertEquals("son name", user.getName());
     }
@@ -94,7 +94,7 @@ public class QueryTest {
     @Test
     public void testSimpleInheritanceObtain(){
         UserQuery user = new UserQuery();
-        admin.obtain(user).where("description").equal("parent description2").find();
+        admin.obtain(user).If("description").equal("parent description2").find();
 
         Assert.assertEquals("son name2", user.getName());
     }
@@ -102,7 +102,7 @@ public class QueryTest {
     @Test
     public void testWithReferenceObtain(){
         UserQuery user = new UserQuery();
-        admin.obtain(user).where("value", ReferenceQuery.class).equal("son value").find();
+        admin.obtain(user).If("value", ReferenceQuery.class).equal("son value").find();
 
         Assert.assertEquals("parent description", user.getDescription());
     }
@@ -110,7 +110,7 @@ public class QueryTest {
     @Test
     public void testWithReferenceInheritanceObtain(){
         UserQuery user = new UserQuery();
-        admin.obtain(user).where("valueParent", ReferenceQuery.class).equal("value Parent").find();
+        admin.obtain(user).If("valueParent", ReferenceQuery.class).equal("value Parent").find();
 
         Assert.assertEquals("son value", user.getReference().getValue());
     }
@@ -118,13 +118,13 @@ public class QueryTest {
     @Test
     public void testRelatedWithOtherClassObtain(){
         UserQuery user = new UserQuery();
-        admin.obtain(user).where("property", AnotherClass.class).equal("son name").
+        admin.obtain(user).If("property", AnotherClass.class).equal("son name").
                 and("name").equal("property", AnotherClass.class).find();
 
         Assert.assertEquals("son value", user.getReference().getValue());
 
         UserQuery user3 = new UserQuery();
-        admin.obtain(user3).where("name").equal("property", AnotherClass.class).
+        admin.obtain(user3).If("name").equal("property", AnotherClass.class).
                 and("property", AnotherClass.class).equal("son name").find();
         Assert.assertEquals("son value", user3.getReference().getValue());
     }
@@ -132,7 +132,7 @@ public class QueryTest {
     @Test
     public void testRelatedWithOtherClassInheritanceObtain(){
         UserQuery user = new UserQuery();
-        admin.obtain(user).where("description").equal("description", AnotherParent.class).
+        admin.obtain(user).If("description").equal("description", AnotherParent.class).
                 and("description", AnotherParent.class).equal("parent description").find();
 
         Assert.assertEquals("son value", user.getReference().getValue());
@@ -142,7 +142,7 @@ public class QueryTest {
     public void testMatchOrNotEqual(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("name").
+        ArrayList array = admin.obtain(query).If("name").
                 match("diego sarmentero").or("cond").notEqual(true).findAll();
 
         Assert.assertEquals(2, array.size());
@@ -152,7 +152,7 @@ public class QueryTest {
     public void testBetweenAndLower(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("birth").between("1980-01-01", "2010-12-31").
+        ArrayList array = admin.obtain(query).If("birth").inRange("1980-01-01", "2010-12-31").
                 and("salary").lower(2000).findAll();
 
         Assert.assertEquals(1, array.size());
@@ -162,7 +162,7 @@ public class QueryTest {
     public void testInOrMatch(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("age").in(22, 23, 24, 25).
+        ArrayList array = admin.obtain(query).If("age").contains(22, 23, 24, 25).
                 or("name").match("sarmentero").findAll();
 
         Assert.assertEquals(2, array.size());
@@ -172,7 +172,7 @@ public class QueryTest {
     public void testIsNotNullAndGreater(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("name").isNotNull().
+        ArrayList array = admin.obtain(query).If("name").isNotNull().
                 and("salary").equalORgreater(2000).findAll();
 
         Assert.assertEquals(1, array.size());
@@ -191,8 +191,8 @@ public class QueryTest {
     public void testGroupHaving(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("age").greater(10).
-                group("salary").whereGroup("salary").greater(2000).findAll();
+        ArrayList array = admin.obtain(query).If("age").greater(10).
+                group("salary").ifGroup("salary").greater(2000).findAll();
 
         Assert.assertEquals(1, array.size());
     }
@@ -201,7 +201,7 @@ public class QueryTest {
     public void testDateMonthEqual(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("birth").date().month().equal(5).findAll();
+        ArrayList array = admin.obtain(query).If("birth").date().month().equal(5).findAll();
 
         Assert.assertEquals(1, array.size());
         Assert.assertEquals("cat", ((CompleteQuery)array.get(0)).getName());
@@ -211,7 +211,7 @@ public class QueryTest {
     public void testDateDayLower(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("birth").date().
+        ArrayList array = admin.obtain(query).If("birth").date().
                 day().lower(21).findAll();
 
         Assert.assertEquals(2, array.size());
@@ -221,13 +221,13 @@ public class QueryTest {
     public void testDateDifferenceWith(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).where("birth").date().
+        ArrayList array = admin.obtain(query).If("birth").date().
                 differenceWith("20040522").equal(2).findAll();
 
         Assert.assertEquals(1, array.size());
 
         java.sql.Date date = new Date(104, 4, 22);
-        array = admin.obtain(query).where("birth").date().
+        array = admin.obtain(query).If("birth").date().
                 differenceWith(date.toString()).equal(2).findAll();
 
         Assert.assertEquals(1, array.size());

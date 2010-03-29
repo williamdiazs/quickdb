@@ -15,7 +15,7 @@ public class ViewObject extends View{
     public Object query(){
         ObjectViewTest1 o1 = new ObjectViewTest1();
         Query query = Query.create(this.getAdminBase(), o1);
-        query.where("account", ObjectViewTest1.class).equal("accountTest");
+        query.If("account", ObjectViewTest1.class).equal("accountTest");
         return query;
     }
 

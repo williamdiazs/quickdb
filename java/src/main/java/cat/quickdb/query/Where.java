@@ -28,6 +28,16 @@ public class Where implements IQuery {
         this.condition.append(" " + cond);
     }
 
+    public SubQuery For(Object... obj){
+        if(obj.length == 0){
+            //IMPROVE
+            throw new RuntimeException();
+        }
+
+        SubQuery sub = SubQuery.createSubQuery(this, obj);
+        return sub;
+    }
+
     public Query equal(Object... object) {
         this.condition.append(" = ");
         this.processObject(object);
@@ -88,13 +98,13 @@ public class Where implements IQuery {
         return this.query;
     }
 
-    public Query between(Object val1, Object val2) {
+    public Query inRange(Object val1, Object val2) {
         this.condition.append(" BETWEEN '" + val1 + "' AND '" + val2 + "'");
 
         return this.query;
     }
 
-    public Query in(Object... object) {
+    public Query contains(Object... object) {
         this.condition.append(" IN (");
         for (int i = 0; i < object.length; i++) {
             if(i > 0){

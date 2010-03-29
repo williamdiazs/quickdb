@@ -38,7 +38,7 @@ public class BindingTest {
     public void testObtain(){
         BindingObject bind = new BindingObject();
 
-        bind.obtain().where("name").equal("quickdb").find();
+        bind.obtain().If("name").equal("quickdb").find();
         Assert.assertEquals("quickdb", bind.getName());
         Assert.assertEquals(3000.50, bind.getSalary());
     }

@@ -68,7 +68,7 @@ public class AnnotationTest {
     public void testObtain(){
         ModelAnnotation model = new ModelAnnotation();
 
-        Assert.assertTrue(admin.obtain(model).where("name").equal("model name").find());
+        Assert.assertTrue(admin.obtain(model).If("name").equal("model name").find());
 
         Assert.assertEquals(3000.5, model.getterSalary());
         Assert.assertEquals(3, model.getArray().size());
@@ -78,7 +78,7 @@ public class AnnotationTest {
     public void testModify(){
         ModelAnnotation model = new ModelAnnotation();
 
-        Assert.assertTrue(admin.obtain(model).where("name").equal("model name").find());
+        Assert.assertTrue(admin.obtain(model).If("name").equal("model name").find());
 
         model.setAge(15);
         Assert.assertFalse(admin.modify(model));
@@ -91,7 +91,7 @@ public class AnnotationTest {
     public void testDelete(){
         ModelAnnotation model = new ModelAnnotation();
 
-        Assert.assertTrue(admin.obtain(model).where("name").equal("model name").find());
+        Assert.assertTrue(admin.obtain(model).If("name").equal("model name").find());
 
         Assert.assertEquals(3000.5, model.getterSalary());
         Assert.assertTrue(admin.delete(model));
