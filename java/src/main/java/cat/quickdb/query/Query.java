@@ -8,15 +8,15 @@ import java.util.ArrayList;
 public class Query implements IQuery {
 
     AdminBase admin;
-    private StringBuilder select;
-    private StringBuilder from;
-    private StringBuilder groupby;
-    private StringBuilder order;
-    private Where where;
-    private Where having;
+    protected StringBuilder select;
+    protected StringBuilder from;
+    protected StringBuilder groupby;
+    protected StringBuilder order;
+    protected Where where;
+    protected Where having;
     ReflectionUtilities reflec;
     private Object object;
-    private String table;
+    protected String table;
 
     protected Query(AdminBase admin, Object object) {
         this.admin = admin;
@@ -225,7 +225,7 @@ public class Query implements IQuery {
         return array;
     }
 
-    String processRequest(String field, Object... clazz) {
+    protected String processRequest(String field, Object... clazz) {
         Class c;
         if (clazz.length != 0) {
             c = (Class) clazz[0];

@@ -7,11 +7,14 @@ public class Where implements IQuery {
     Query query;
     private StringBuilder condition;
     private DateQuery date;
+    private boolean hasSub;
+    private String sub;
 
     private Where(Query query) {
         this.query = query;
         this.condition = new StringBuilder();
         this.date = DateQuery.createDate(this);
+        this.hasSub = false;
     }
 
     static Where createWhere(Query query) {
@@ -28,54 +31,43 @@ public class Where implements IQuery {
         this.condition.append(" " + cond);
     }
 
-    public SubQuery For(Object... obj){
-        if(obj.length == 0){
-            //IMPROVE
-            throw new RuntimeException();
-        }
-
-        SubQuery sub = SubQuery.createSubQuery(this, obj);
-        return sub;
+    public SubQuery For(String attr, Class clazz) {
+        SubQuery subQ = SubQuery.createSubQuery(this, attr, clazz);
+        return subQ;
     }
 
     public Query equal(Object... object) {
-        this.condition.append(" = ");
-        this.processObject(object);
+        this.manageOperation("=", object);
 
         return this.query;
     }
 
     public Query greater(Object... object) {
-        this.condition.append(" > ");
-        this.processObject(object);
+        this.manageOperation(">", object);
 
         return this.query;
     }
 
     public Query lower(Object... object) {
-        this.condition.append(" < ");
-        this.processObject(object);
+        this.manageOperation("<", object);
 
         return this.query;
     }
 
     public Query equalORgreater(Object... object) {
-        this.condition.append(" >= ");
-        this.processObject(object);
+        this.manageOperation(">=", object);
 
         return this.query;
     }
 
     public Query equalORlower(Object... object) {
-        this.condition.append(" <= ");
-        this.processObject(object);
+        this.manageOperation("<=", object);
 
         return this.query;
     }
 
     public Query notEqual(Object... object) {
-        this.condition.append(" <> ");
-        this.processObject(object);
+        this.manageOperation("<>", object);
 
         return this.query;
     }
@@ -105,31 +97,46 @@ public class Where implements IQuery {
     }
 
     public Query contains(Object... object) {
-        this.condition.append(" IN (");
-        for (int i = 0; i < object.length; i++) {
-            if(i > 0){
-                this.condition.append(", ");
+        if (this.hasSub) {
+            this.manageOperation("IN", object);
+            this.hasSub = false;
+        }else{
+            this.condition.append(" IN (");
+            for (int i = 0; i < object.length; i++) {
+                if (i > 0) {
+                    this.condition.append(", ");
+                }
+                if (object[i] instanceof String) {
+                    this.condition.append("'" + object[i] + "'");
+                } else {
+                    this.condition.append(object[i]);
+                }
             }
-            if (object[i] instanceof String) {
-                this.condition.append("'" + object[i] + "'");
-            } else {
-                this.condition.append(object[i]);
-            }
+            this.condition.append(")");
         }
-        this.condition.append(")");
 
         return this.query;
     }
 
     public Query match(String value) {
         this.condition.append(" LIKE ");
-        if (!value.contains("_") && !value.contains("%")) {
-            value = "%" + value + "%";
+        if (this.hasSub) {
+            this.condition.append(" " + this.sub + " ");
+            this.hasSub = false;
+        }else{
+            if (!value.contains("_") && !value.contains("%")) {
+                value = "%" + value + "%";
+            }
+
+            this.condition.append("'" + value + "'");
         }
 
-        this.condition.append("'" + value + "'");
-
         return this.query;
+    }
+
+    void addSubQueryCondition(String sub) {
+        this.hasSub = true;
+        this.sub = sub;
     }
 
     public DateQuery date() {
@@ -153,6 +160,18 @@ public class Where implements IQuery {
 
     private String stringObject(Object object) {
         return "'" + String.valueOf(object) + "'";
+    }
+
+    private void manageOperation(String oper, Object[] object) {
+        if (this.hasSub) {
+            this.processObject(object);
+            this.condition.append(" " + oper + " ");
+            this.condition.append(" " + this.sub + " ");
+            this.hasSub = false;
+        } else {
+            this.condition.append(" " + oper + " ");
+            this.processObject(object);
+        }
     }
 
     private void processObject(Object... object) {
