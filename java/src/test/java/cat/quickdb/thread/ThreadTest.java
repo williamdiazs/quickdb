@@ -2,6 +2,7 @@ package cat.quickdb.thread;
 
 import cat.quickdb.db.AdminBase;
 import cat.quickdb.db.AdminThread;
+import cat.quickdb.tests.QuickDBTests;
 import cat.quickdb.thread.model.ThreadObject;
 import cat.quickdb.thread.model.ThreadReference2;
 import java.util.ArrayList;
@@ -13,8 +14,9 @@ public class ThreadTest {
 
     @Before
     public void configure() {
-        this.admin = new AdminThread(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = new AdminThread(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
     }
     
     @Test

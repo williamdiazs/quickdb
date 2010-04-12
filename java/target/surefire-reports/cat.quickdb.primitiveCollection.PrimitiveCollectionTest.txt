@@ -1,4 +1,4 @@
 -------------------------------------------------------------------------------
 Test set: cat.quickdb.primitiveCollection.PrimitiveCollectionTest
 -------------------------------------------------------------------------------
-Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.537 sec
+Tests run: 6, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.601 sec

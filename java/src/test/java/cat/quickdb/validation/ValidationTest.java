@@ -1,6 +1,7 @@
 package cat.quickdb.validation;
 
 import cat.quickdb.db.AdminBase;
+import cat.quickdb.tests.QuickDBTests;
 import cat.quickdb.validation.model.ValidComplexDate;
 import cat.quickdb.validation.model.ValidComplexNumeric;
 import cat.quickdb.validation.model.ValidUser;
@@ -14,8 +15,9 @@ public class ValidationTest {
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
     }
 
     @Test

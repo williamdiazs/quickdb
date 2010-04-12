@@ -6,18 +6,20 @@ import cat.quickdb.query.model.AnotherParent;
 import cat.quickdb.query.model.CompleteQuery;
 import cat.quickdb.query.model.ReferenceQuery;
 import cat.quickdb.query.model.UserQuery;
+import cat.quickdb.tests.QuickDBTests;
 import java.sql.Date;
 import java.util.ArrayList;
 import org.junit.*;
 
 public class QueryTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
 
         if( !(this.admin.checkTableExist("UserQuery") &&
                 this.admin.checkTableExist("UserParent") &&
@@ -231,10 +233,6 @@ public class QueryTest {
                 differenceWith(date.toString()).equal(2).findAll();
 
         Assert.assertEquals(1, array.size());
-    }
-
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(QueryTest.class);
     }
 
 }

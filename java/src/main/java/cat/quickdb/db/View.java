@@ -56,9 +56,11 @@ public abstract class View {
             obj = this.query();
         }
         if(obj instanceof String){
+            System.out.println("string");
             String sql = String.valueOf(obj);
-            array = this.admin.obtainAll(this, sql);
+            array = this.admin.obtainAll(this.getClass(), sql);
         }else if((obj instanceof Query) || (obj instanceof Where)){
+            System.out.println("query");
             ((IQuery) obj).dataForViews(this.columns(),
                     this.renameColumns(), this, this.classes());
             array = ((IQuery) obj).findAll();

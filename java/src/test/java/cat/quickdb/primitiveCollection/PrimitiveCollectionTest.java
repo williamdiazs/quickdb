@@ -7,17 +7,19 @@ import cat.quickdb.primitiveCollection.model.DoublePrimitive;
 import cat.quickdb.primitiveCollection.model.FloatPrimitive;
 import cat.quickdb.primitiveCollection.model.IntegerPrimitive;
 import cat.quickdb.primitiveCollection.model.StringPrimitive;
+import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 import org.junit.*;
 
 public class PrimitiveCollectionTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
     }
 
     @Test

@@ -283,16 +283,14 @@ public class EntityManager {
                     //Suppose that "id" was readed before
                     ArrayList results;
                     if(this.ref.checkPrimitivesExtended(o2, null)){
-                        PrimitiveCollec prim = new PrimitiveCollec();
-                        results = admin.obtainAll(prim,
+                        results = admin.obtainAll(PrimitiveCollec.class,
                                 forColumn + "=" + this.primaryKeyValue.pop());
                         int lengthPrimitives = results.size();
                         for(int q = 0; q < lengthPrimitives; q++){
                             results.set(q, ((PrimitiveCollec)results.get(q)).getObject());
                         }
                     }else{
-                        M2mTable m2m = new M2mTable();
-                        results = admin.obtainAll(m2m,
+                        results = admin.obtainAll(M2mTable.class,
                                 forColumn + "=" + this.primaryKeyValue.pop());
                         admin.setCollectionHasName(false);
                         results = this.restoreCollection(admin, results,

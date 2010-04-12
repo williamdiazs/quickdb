@@ -11,16 +11,18 @@ import junit.framework.Assert;
 import cat.quickdb.db.AdminBase;
 import cat.quickdb.model.Alter1;
 import cat.quickdb.model.Alter2;
+import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 
 public class ComplexOperationsTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
         this.admin.setAutoCommit(true);
     }
 

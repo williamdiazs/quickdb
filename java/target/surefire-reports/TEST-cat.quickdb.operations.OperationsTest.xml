@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="UTF-8" ?>
-<testsuite failures="0" time="5.019" errors="0" skipped="0" tests="23" name="cat.quickdb.operations.OperationsTest">
+<testsuite failures="0" time="4.972" errors="0" skipped="0" tests="23" name="cat.quickdb.operations.OperationsTest">
   <properties>
     <property name="java.runtime.name" value="Java(TM) SE Runtime Environment"/>
-    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/amd64"/>
-    <property name="java.vm.version" value="14.1-b02"/>
+    <property name="sun.boot.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/amd64"/>
+    <property name="java.vm.version" value="16.2-b04"/>
     <property name="java.vm.vendor" value="Sun Microsystems Inc."/>
     <property name="java.vendor.url" value="http://java.sun.com/"/>
     <property name="path.separator" value=":"/>
@@ -14,24 +14,24 @@
     <property name="sun.os.patch.level" value="unknown"/>
     <property name="java.vm.specification.name" value="Java Virtual Machine Specification"/>
     <property name="user.dir" value="/media/GATO/programacion/proyectos/quickdb/java"/>
-    <property name="java.runtime.version" value="1.6.0_15-b03"/>
+    <property name="java.runtime.version" value="1.6.0_19-b04"/>
     <property name="java.awt.graphicsenv" value="sun.awt.X11GraphicsEnvironment"/>
     <property name="basedir" value="/media/GATO/programacion/proyectos/quickdb/java"/>
-    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/endorsed"/>
+    <property name="java.endorsed.dirs" value="/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/endorsed"/>
     <property name="os.arch" value="amd64"/>
-    <property name="surefire.real.class.path" value="/tmp/surefirebooter6190790799557208970.jar"/>
+    <property name="surefire.real.class.path" value="/tmp/surefirebooter5360077734624640395.jar"/>
     <property name="java.io.tmpdir" value="/tmp"/>
     <property name="line.separator" value="
 "/>
     <property name="java.vm.specification.vendor" value="Sun Microsystems Inc."/>
     <property name="os.name" value="Linux"/>
     <property name="sun.jnu.encoding" value="UTF-8"/>
-    <property name="java.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/amd64/server:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/amd64:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/../lib/amd64:/usr/java/packages/lib/amd64:/lib:/usr/lib"/>
+    <property name="java.library.path" value="/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/amd64/server:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/amd64:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/../lib/amd64:/usr/java/packages/lib/amd64:/usr/lib64:/lib64:/lib:/usr/lib"/>
     <property name="surefire.test.class.path" value="/media/GATO/programacion/proyectos/quickdb/java/target/test-classes:/media/GATO/programacion/proyectos/quickdb/java/target/classes:/home/gato/.m2/repository/junit/junit/4.0/junit-4.0.jar:/home/gato/.m2/repository/mysql/mysql-connector-java/5.1.5/mysql-connector-java-5.1.5.jar:"/>
     <property name="java.specification.name" value="Java Platform API Specification"/>
     <property name="java.class.version" value="50.0"/>
     <property name="sun.management.compiler" value="HotSpot 64-Bit Server Compiler"/>
-    <property name="os.version" value="2.6.31-20-generic"/>
+    <property name="os.version" value="2.6.31-21-generic"/>
     <property name="user.home" value="/home/gato"/>
     <property name="user.timezone" value="America/Argentina/Cordoba"/>
     <property name="java.awt.printerjob" value="sun.print.PSPrinterJob"/>
@@ -41,13 +41,13 @@
     <property name="java.class.path" value="/media/GATO/programacion/proyectos/quickdb/java/target/test-classes:/media/GATO/programacion/proyectos/quickdb/java/target/classes:/home/gato/.m2/repository/junit/junit/4.0/junit-4.0.jar:/home/gato/.m2/repository/mysql/mysql-connector-java/5.1.5/mysql-connector-java-5.1.5.jar:"/>
     <property name="java.vm.specification.version" value="1.0"/>
     <property name="sun.arch.data.model" value="64"/>
-    <property name="java.home" value="/usr/lib/jvm/java-6-sun-1.6.0.15/jre"/>
+    <property name="java.home" value="/usr/lib/jvm/java-6-sun-1.6.0.19/jre"/>
     <property name="java.specification.vendor" value="Sun Microsystems Inc."/>
     <property name="user.language" value="es"/>
     <property name="java.vm.info" value="mixed mode"/>
-    <property name="java.version" value="1.6.0_15"/>
-    <property name="java.ext.dirs" value="/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/ext:/usr/java/packages/lib/ext"/>
-    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/resources.jar:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/rt.jar:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/jsse.jar:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/jce.jar:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/lib/charsets.jar:/usr/lib/jvm/java-6-sun-1.6.0.15/jre/classes"/>
+    <property name="java.version" value="1.6.0_19"/>
+    <property name="java.ext.dirs" value="/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/ext:/usr/java/packages/lib/ext"/>
+    <property name="sun.boot.class.path" value="/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/resources.jar:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/rt.jar:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/sunrsasign.jar:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/jsse.jar:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/jce.jar:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/lib/charsets.jar:/usr/lib/jvm/java-6-sun-1.6.0.19/jre/classes"/>
     <property name="java.vendor" value="Sun Microsystems Inc."/>
     <property name="localRepository" value="/home/gato/.m2/repository"/>
     <property name="file.separator" value="/"/>
@@ -57,27 +57,27 @@
     <property name="sun.desktop" value="gnome"/>
     <property name="sun.cpu.isalist" value=""/>
   </properties>
-  <testcase time="0.083" classname="cat.quickdb.operations.OperationsTest" name="testSaveSimpleObject"/>
-  <testcase time="0.055" classname="cat.quickdb.operations.OperationsTest" name="testSaveGetIndexSimple"/>
-  <testcase time="0.398" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyDeleteSimple"/>
-  <testcase time="0.11" classname="cat.quickdb.operations.OperationsTest" name="testCreateTableSimple"/>
-  <testcase time="0.574" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCollectionSimple"/>
-  <testcase time="0.099" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectComposed"/>
-  <testcase time="0.221" classname="cat.quickdb.operations.OperationsTest" name="testSaveCollectionComposed"/>
-  <testcase time="0.121" classname="cat.quickdb.operations.OperationsTest" name="testSaveGetIndexComposed"/>
-  <testcase time="0.287" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyDeleteComposed"/>
-  <testcase time="0.11" classname="cat.quickdb.operations.OperationsTest" name="testCreateTableComposed"/>
-  <testcase time="0.109" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectComposedIntuitive"/>
-  <testcase time="0.188" classname="cat.quickdb.operations.OperationsTest" name="testSaveModifyObjectComposedIntuitive"/>
-  <testcase time="0.408" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectComposedCollectionIntuitive"/>
-  <testcase time="0.11" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectSimpleIntuitive"/>
-  <testcase time="0.068" classname="cat.quickdb.operations.OperationsTest" name="testSaveDeleteObjectSimpleIntuitive"/>
-  <testcase time="0.573" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCollectionSimpleIntuitive"/>
-  <testcase time="0.287" classname="cat.quickdb.operations.OperationsTest" name="testMany2ManyFunction"/>
-  <testcase time="0.117" classname="cat.quickdb.operations.OperationsTest" name="testObtainAll"/>
-  <testcase time="0.099" classname="cat.quickdb.operations.OperationsTest" name="testInheritanceWithAnnotation"/>
-  <testcase time="0.206" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCompound"/>
-  <testcase time="0.198" classname="cat.quickdb.operations.OperationsTest" name="testObjectsWithCollectionIntuitive"/>
-  <testcase time="0.507" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCompoundCollection"/>
-  <testcase time="0.083" classname="cat.quickdb.operations.OperationsTest" name="testPrimitives"/>
+  <testcase time="0.08" classname="cat.quickdb.operations.OperationsTest" name="testSaveSimpleObject"/>
+  <testcase time="0.087" classname="cat.quickdb.operations.OperationsTest" name="testSaveGetIndexSimple"/>
+  <testcase time="0.462" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyDeleteSimple"/>
+  <testcase time="0.043" classname="cat.quickdb.operations.OperationsTest" name="testCreateTableSimple"/>
+  <testcase time="0.728" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCollectionSimple"/>
+  <testcase time="0.088" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectComposed"/>
+  <testcase time="0.165" classname="cat.quickdb.operations.OperationsTest" name="testSaveCollectionComposed"/>
+  <testcase time="0.109" classname="cat.quickdb.operations.OperationsTest" name="testSaveGetIndexComposed"/>
+  <testcase time="0.254" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyDeleteComposed"/>
+  <testcase time="0.109" classname="cat.quickdb.operations.OperationsTest" name="testCreateTableComposed"/>
+  <testcase time="0.099" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectComposedIntuitive"/>
+  <testcase time="0.187" classname="cat.quickdb.operations.OperationsTest" name="testSaveModifyObjectComposedIntuitive"/>
+  <testcase time="0.188" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectComposedCollectionIntuitive"/>
+  <testcase time="0.109" classname="cat.quickdb.operations.OperationsTest" name="testSaveObjectSimpleIntuitive"/>
+  <testcase time="0.047" classname="cat.quickdb.operations.OperationsTest" name="testSaveDeleteObjectSimpleIntuitive"/>
+  <testcase time="0.274" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCollectionSimpleIntuitive"/>
+  <testcase time="0.242" classname="cat.quickdb.operations.OperationsTest" name="testMany2ManyFunction"/>
+  <testcase time="0.13" classname="cat.quickdb.operations.OperationsTest" name="testObtainAll"/>
+  <testcase time="0.085" classname="cat.quickdb.operations.OperationsTest" name="testInheritanceWithAnnotation"/>
+  <testcase time="0.209" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCompound"/>
+  <testcase time="0.207" classname="cat.quickdb.operations.OperationsTest" name="testObjectsWithCollectionIntuitive"/>
+  <testcase time="0.977" classname="cat.quickdb.operations.OperationsTest" name="testSaveObtainModifyCompoundCollection"/>
+  <testcase time="0.044" classname="cat.quickdb.operations.OperationsTest" name="testPrimitives"/>
 </testsuite>

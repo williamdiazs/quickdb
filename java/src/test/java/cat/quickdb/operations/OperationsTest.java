@@ -14,6 +14,7 @@ import cat.quickdb.model.PruebaChild;
 import cat.quickdb.model.Pruebas;
 import cat.quickdb.model.Race;
 import cat.quickdb.model.SuperPrueba;
+import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 import org.junit.*;
 import junit.framework.Assert;
@@ -25,12 +26,13 @@ import junit.framework.Assert;
  */
 public class OperationsTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
         this.admin.setAutoCommit(true);
     }
 
@@ -85,8 +87,7 @@ public class OperationsTest {
         array.add(new Person("person3", 30));
         admin.saveAll(array);
 
-        Person person = new Person();
-        array = admin.obtainAll(person, "age=30");
+        array = admin.obtainAll(Person.class, "age=30");
         int number = 1;
         for(Object obj : array){
             Assert.assertEquals(30, ((Person) obj).getPersonAge());
@@ -266,8 +267,7 @@ public class OperationsTest {
         array.add(new Race("race3-intuitive"));
         admin.saveAll(array);
 
-        Race race = new Race();
-        array = admin.obtainAll(race, "name like '%intuitive'");
+        array = admin.obtainAll(Race.class, "name like '%intuitive'");
         int cant = array.size();
         Assert.assertTrue(cant>1);
 
@@ -310,8 +310,7 @@ public class OperationsTest {
         array.add(new Prueba("obtainAll3"));
         admin.saveAll(array);
 
-        Prueba p = new Prueba();
-        ArrayList results = admin.obtainAll(p, "name like 'obtainAll%'");
+        ArrayList results = admin.obtainAll(Prueba.class, "name like 'obtainAll%'");
         Assert.assertTrue((results.size() >= 3));
     }
 
@@ -382,7 +381,7 @@ public class OperationsTest {
 
         admin.saveAll(array);
 
-        ArrayList array2 = admin.obtainAll(a1, "street='collectionModify'");
+        ArrayList array2 = admin.obtainAll(Address.class, "street='collectionModify'");
 
         int i = 0;
         for( Object o : array2 ){
@@ -391,7 +390,7 @@ public class OperationsTest {
         }
         admin.modifyAll(array2);
 
-        ArrayList array3 = admin.obtainAll(a1, "street='collectionModify'");
+        ArrayList array3 = admin.obtainAll(Address.class, "street='collectionModify'");
 
         i = 0;
         for( Object o : array2 ){

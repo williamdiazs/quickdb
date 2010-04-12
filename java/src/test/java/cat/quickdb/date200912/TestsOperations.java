@@ -20,20 +20,23 @@ import cat.quickdb.date200912.model.Reference2;
 import cat.quickdb.date200912.model.Son1;
 import cat.quickdb.date200912.model.Son2;
 import cat.quickdb.db.AdminBase;
+import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 import org.junit.*;
 import junit.framework.Assert;
 
 public class TestsOperations {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
-        AdminBase.initializeAdminBinding(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
+        AdminBase.initializeAdminBinding(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
     }
 
     @Test
@@ -355,8 +358,8 @@ public class TestsOperations {
         admin.save(o3);
         admin.cancelAtomicBlock();
 
-        ArrayList array1 = admin.obtainAll(oo2, "id > 0");
-        ArrayList array2 = admin.obtainAll(oo3, "id > 0");
+        ArrayList array1 = admin.obtainAll(Obj2.class, "id > 0");
+        ArrayList array2 = admin.obtainAll(Obj3.class, "id > 0");
         Assert.assertEquals(1, array1.size());
         Assert.assertEquals(1, array2.size());
 
@@ -364,10 +367,10 @@ public class TestsOperations {
         admin.save(o1);
         admin.closeAtomicBlock();
 
-        ArrayList array3 = admin.obtainAll(oo1, "id > 0");
+        ArrayList array3 = admin.obtainAll(Obj1.class, "id > 0");
         Assert.assertEquals(2, array3.size());
         Obj4 oo4 = new Obj4();
-        ArrayList array4 = admin.obtainAll(oo4, "id > 0");
+        ArrayList array4 = admin.obtainAll(Obj4.class, "id > 0");
         Assert.assertEquals(2, array4.size());
     }
 

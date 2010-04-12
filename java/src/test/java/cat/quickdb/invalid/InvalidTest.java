@@ -3,16 +3,18 @@ package cat.quickdb.invalid;
 import cat.quickdb.db.AdminBase;
 import cat.quickdb.invalid.model.Invalid2Object;
 import cat.quickdb.invalid.model.InvalidObject;
+import cat.quickdb.tests.QuickDBTests;
 import org.junit.*;
 
 public class InvalidTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
     }
 
     @Test

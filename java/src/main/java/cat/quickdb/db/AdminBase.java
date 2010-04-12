@@ -454,11 +454,12 @@ public class AdminBase {
      * @param Query [String]
      * @return ArrayList [Collection of Object]
      */
-    public ArrayList obtainAll(Object object, String sql) {
+    public ArrayList obtainAll(Class clazz, String sql) {
         this.startObtainAll = true;
         ArrayList results = new ArrayList();
         try {
             boolean value = false;
+            Object object = this.manager.getRef().emptyInstance(clazz);
             if(sql.startsWith("SELECT ")){
                 value = this.obtainSelect(object, sql);
             }else{

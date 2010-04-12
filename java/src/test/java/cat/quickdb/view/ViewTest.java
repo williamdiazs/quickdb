@@ -2,18 +2,20 @@ package cat.quickdb.view;
 
 import cat.quickdb.db.AdminBase;
 import cat.quickdb.query.Query;
+import cat.quickdb.tests.QuickDBTests;
 import cat.quickdb.view.model.*;
 import java.util.ArrayList;
 import org.junit.*;
 
 public class ViewTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
 
         if(!(admin.checkTableExist("ObjectViewTest1") &&
                 admin.checkTableExist("ObjectViewTest2"))){
@@ -135,7 +137,7 @@ public class ViewTest {
         int size = array.size();
         for(int i = 0; i < size; i++){
             ViewObject v = (ViewObject) array.get(i);
-            Assert.assertEquals("accountTest", view.getAccount());
+            Assert.assertEquals("accountTest", v.getAccount());
         }
     }
 
@@ -160,7 +162,7 @@ public class ViewTest {
         int size = array.size();
         for(int i = 0; i < size; i++){
             ViewObjectString v = (ViewObjectString) array.get(i);
-            Assert.assertEquals("accountTest", view.getAccount());
+            Assert.assertEquals("accountTest", v.getAccount());
         }
     }
 

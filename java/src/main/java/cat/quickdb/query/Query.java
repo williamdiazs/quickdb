@@ -220,7 +220,7 @@ public class Query implements IQuery {
         if (this.order != null) {
             sql.append(" " + this.order.toString());
         }
-        ArrayList array = this.admin.obtainAll(this.object, sql.toString());
+        ArrayList array = this.admin.obtainAll(this.object.getClass(), sql.toString());
 
         return array;
     }

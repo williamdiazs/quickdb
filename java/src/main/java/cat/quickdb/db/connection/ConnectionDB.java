@@ -36,10 +36,10 @@ public class ConnectionDB {
             connection = DriverManager.getConnection(url, username, password);
             this.connection.setAutoCommit(false);
         } catch (ClassNotFoundException e) {
-            System.err.println("'connectMySQL()' Driver couldn't be loaded. " +
+            System.err.println("Driver couldn't be loaded. " +
                     e.getMessage());
         } catch (SQLException e) {
-            System.err.println("'connectMySQL()' Error trying to connect. " +
+            System.err.println("Error trying to connect. " +
                     e.getMessage());
         }
     }

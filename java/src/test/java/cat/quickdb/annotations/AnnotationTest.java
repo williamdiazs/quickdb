@@ -3,17 +3,19 @@ package cat.quickdb.annotations;
 import cat.quickdb.annotations.model.CollectionAnnotation;
 import cat.quickdb.annotations.model.ModelAnnotation;
 import cat.quickdb.db.AdminBase;
+import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 import org.junit.*;
 
 public class AnnotationTest {
 
-    AdminBase admin;
+    private AdminBase admin;
 
     @Before
     public void configure() {
-        this.admin = AdminBase.initialize(AdminBase.DATABASE.MYSQL, "localhost",
-                "3306", "testQuickDB", "root", "");
+        this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
+                QuickDBTests.port, QuickDBTests.instanceDB,
+                QuickDBTests.user, QuickDBTests.pass);
     }
 
     @Test
@@ -95,10 +97,6 @@ public class AnnotationTest {
 
         Assert.assertEquals(3000.5, model.getterSalary());
         Assert.assertTrue(admin.delete(model));
-    }
-
-    public static junit.framework.Test suite() {
-        return new junit.framework.JUnit4TestAdapter(AnnotationTest.class);
     }
 
 }
