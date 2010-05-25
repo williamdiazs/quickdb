@@ -1,7 +1,7 @@
 package cat.quickdb.model;
 
 import java.util.ArrayList;
-import cat.quickdb.annotation.*;
+import quickdb.annotation.*;
 
 @Table
 public class Book{

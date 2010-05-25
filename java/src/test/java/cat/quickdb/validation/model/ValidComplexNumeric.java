@@ -1,6 +1,6 @@
 package cat.quickdb.validation.model;
 
-import cat.quickdb.annotation.Validation;
+import quickdb.annotation.Validation;
 
 public class ValidComplexNumeric {
 

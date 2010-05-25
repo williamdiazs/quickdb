@@ -1,6 +1,6 @@
 package cat.quickdb.tests;
 
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 
 public class QuickDBTests {
 

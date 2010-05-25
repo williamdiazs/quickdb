@@ -1,7 +1,7 @@
 package cat.quickdb.view;
 
-import cat.quickdb.db.AdminBase;
-import cat.quickdb.query.Query;
+import quickdb.db.AdminBase;
+import quickdb.query.Query;
 import cat.quickdb.tests.QuickDBTests;
 import cat.quickdb.view.model.*;
 import java.util.ArrayList;

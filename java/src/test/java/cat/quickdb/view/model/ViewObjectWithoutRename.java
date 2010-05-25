@@ -1,7 +1,7 @@
 package cat.quickdb.view.model;
 
-import cat.quickdb.db.View;
-import cat.quickdb.query.Query;
+import quickdb.db.View;
+import quickdb.query.Query;
 import java.sql.Date;
 
 public class ViewObjectWithoutRename extends View{

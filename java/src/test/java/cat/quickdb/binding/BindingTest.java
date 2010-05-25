@@ -1,7 +1,7 @@
 package cat.quickdb.binding;
 
 import cat.quickdb.binding.model.BindingObject;
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.tests.QuickDBTests;
 import org.junit.*;
 import junit.framework.Assert;

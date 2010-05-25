@@ -1,6 +1,6 @@
 package cat.quickdb.primitiveCollection;
 
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.primitiveCollection.model.BooleanPrimitive;
 import cat.quickdb.primitiveCollection.model.DatePrimitive;
 import cat.quickdb.primitiveCollection.model.DoublePrimitive;

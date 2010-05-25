@@ -1,6 +1,6 @@
 package cat.quickdb.date200912.model;
 
-import cat.quickdb.db.AdminBinding;
+import quickdb.db.AdminBinding;
 
 /**
  *

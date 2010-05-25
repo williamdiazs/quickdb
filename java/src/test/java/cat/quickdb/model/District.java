@@ -1,6 +1,6 @@
 package cat.quickdb.model;
 
-import cat.quickdb.annotation.*;
+import quickdb.annotation.*;
 
 @Table("district")
 public class District{

@@ -1,6 +1,6 @@
 package cat.quickdb.invalid;
 
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.invalid.model.Invalid2Object;
 import cat.quickdb.invalid.model.InvalidObject;
 import cat.quickdb.tests.QuickDBTests;

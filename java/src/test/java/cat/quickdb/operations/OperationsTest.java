@@ -1,6 +1,6 @@
 package cat.quickdb.operations;
 
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.model.Address;
 import cat.quickdb.model.District;
 import cat.quickdb.model.Dog;

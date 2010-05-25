@@ -1,6 +1,6 @@
 package cat.quickdb.validation;
 
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.tests.QuickDBTests;
 import cat.quickdb.validation.model.ValidComplexDate;
 import cat.quickdb.validation.model.ValidComplexNumeric;

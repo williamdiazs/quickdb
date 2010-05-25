@@ -8,7 +8,7 @@ import cat.quickdb.complexmodel.Single;
 import cat.quickdb.complexmodel.Son;
 import org.junit.*;
 import junit.framework.Assert;
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.model.Alter1;
 import cat.quickdb.model.Alter2;
 import cat.quickdb.tests.QuickDBTests;

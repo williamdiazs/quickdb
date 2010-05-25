@@ -1,6 +1,6 @@
 package cat.quickdb.binding.model;
 
-import cat.quickdb.db.AdminBinding;
+import quickdb.db.AdminBinding;
 import java.sql.Date;
 
 public class BindingObject extends AdminBinding{

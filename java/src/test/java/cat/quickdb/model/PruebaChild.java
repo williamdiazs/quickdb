@@ -1,6 +1,6 @@
 package cat.quickdb.model;
 
-import cat.quickdb.annotation.*;
+import quickdb.annotation.*;
 
 @Parent
 @Table

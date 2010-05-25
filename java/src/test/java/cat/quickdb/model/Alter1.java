@@ -1,6 +1,6 @@
 package cat.quickdb.model;
 
-import cat.quickdb.annotation.Table;
+import quickdb.annotation.Table;
 
 @Table("AlterTable")
 public class Alter1 {

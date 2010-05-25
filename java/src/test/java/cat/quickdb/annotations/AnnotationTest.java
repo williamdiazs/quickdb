@@ -2,7 +2,7 @@ package cat.quickdb.annotations;
 
 import cat.quickdb.annotations.model.CollectionAnnotation;
 import cat.quickdb.annotations.model.ModelAnnotation;
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 import org.junit.*;

@@ -1,6 +1,6 @@
 package cat.quickdb.query;
 
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.query.model.AnotherClass;
 import cat.quickdb.query.model.AnotherParent;
 import cat.quickdb.query.model.CompleteQuery;
@@ -164,7 +164,7 @@ public class QueryTest {
     public void testInOrMatch(){
         CompleteQuery query = new CompleteQuery();
 
-        ArrayList array = admin.obtain(query).If("age").contains(22, 23, 24, 25).
+        ArrayList array = admin.obtain(query).If("age").in(22, 23, 24, 25).
                 or("name").match("sarmentero").findAll();
 
         Assert.assertEquals(2, array.size());

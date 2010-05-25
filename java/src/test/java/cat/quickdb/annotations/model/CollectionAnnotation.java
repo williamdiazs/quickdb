@@ -1,10 +1,10 @@
 package cat.quickdb.annotations.model;
 
-import cat.quickdb.annotation.Column;
-import cat.quickdb.annotation.ColumnDefinition;
-import cat.quickdb.annotation.Definition.DATATYPE;
-import cat.quickdb.annotation.Properties.TYPES;
-import cat.quickdb.annotation.Table;
+import quickdb.annotation.Column;
+import quickdb.annotation.ColumnDefinition;
+import quickdb.annotation.Definition.DATATYPE;
+import quickdb.annotation.Properties.TYPES;
+import quickdb.annotation.Table;
 
 @Table("CollecAnnotation")
 public class CollectionAnnotation {

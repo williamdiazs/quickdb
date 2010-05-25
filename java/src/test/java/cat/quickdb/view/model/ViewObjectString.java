@@ -1,6 +1,6 @@
 package cat.quickdb.view.model;
 
-import cat.quickdb.db.View;
+import quickdb.db.View;
 import java.sql.Date;
 
 public class ViewObjectString extends View{

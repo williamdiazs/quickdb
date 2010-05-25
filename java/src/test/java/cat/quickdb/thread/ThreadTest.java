@@ -1,7 +1,7 @@
 package cat.quickdb.thread;
 
-import cat.quickdb.db.AdminBase;
-import cat.quickdb.db.AdminThread;
+import quickdb.db.AdminBase;
+import quickdb.db.AdminThread;
 import cat.quickdb.tests.QuickDBTests;
 import cat.quickdb.thread.model.ThreadObject;
 import cat.quickdb.thread.model.ThreadReference2;

@@ -19,7 +19,7 @@ import cat.quickdb.date200912.model.Reference1;
 import cat.quickdb.date200912.model.Reference2;
 import cat.quickdb.date200912.model.Son1;
 import cat.quickdb.date200912.model.Son2;
-import cat.quickdb.db.AdminBase;
+import quickdb.db.AdminBase;
 import cat.quickdb.tests.QuickDBTests;
 import java.util.ArrayList;
 import org.junit.*;

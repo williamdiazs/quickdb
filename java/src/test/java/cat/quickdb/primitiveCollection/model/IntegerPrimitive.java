@@ -1,6 +1,6 @@
 package cat.quickdb.primitiveCollection.model;
 
-import cat.quickdb.annotation.Column;
+import quickdb.annotation.Column;
 import java.util.ArrayList;
 
 public class IntegerPrimitive {

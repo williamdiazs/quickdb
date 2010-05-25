@@ -1,6 +1,6 @@
 package cat.quickdb.date200912.model;
 
-import cat.quickdb.annotation.*;
+import quickdb.annotation.*;
 
 @Table
 public class Name2 {
