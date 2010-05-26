@@ -8,6 +8,7 @@ import cat.quickdb.complexDataStructure.model.IndividualObject2;
 import cat.quickdb.complexDataStructure.model.MultipleCollections;
 import cat.quickdb.complexDataStructure.model.MultipleCollectionsPrimitive;
 import cat.quickdb.complexDataStructure.model.ParentCollection;
+import cat.quickdb.complexDataStructure.model.SamePrimitiveCollection;
 import cat.quickdb.complexDataStructure.model.SonData;
 import cat.quickdb.complexDataStructure.model.SonReference;
 import cat.quickdb.tests.QuickDBTests;
@@ -170,6 +171,35 @@ public class DataStructureTest {
         Assert.assertTrue(son2.getParentCollection().size() == 3);
         Assert.assertTrue(son2.getPhones().size() == 4);
         Assert.assertTrue(son2.getReference().getValueReferenceParent().equals("value from son reference parent"));
+    }
+
+    @Test
+    public void samePrimitiveCollectionTest(){
+        SamePrimitiveCollection same = new SamePrimitiveCollection();
+        same.setName("same name");
+
+        ArrayList array1 = new ArrayList();
+        array1.add(45345);
+        array1.add(64556);
+        array1.add(23112);
+
+        ArrayList array2 = new ArrayList();
+        array2.add(12);
+        array2.add(54);
+        array2.add(68);
+
+        same.setNumbers1(array1);
+        same.setNumbers2(array2);
+
+        Assert.assertTrue(admin.save(same));
+
+        SamePrimitiveCollection same2 = new SamePrimitiveCollection();
+        admin.obtain(same2).If("name").equal("same name").find();
+
+        Assert.assertTrue(same2.getNumbers1().size() == 3);
+        Assert.assertTrue(same2.getNumbers2().size() == 3);
+        Assert.assertTrue(same2.getNumbers1().get(0) == 45345);
+        Assert.assertTrue(same2.getNumbers2().get(1) == 54);
     }
 
 }
