@@ -556,7 +556,7 @@ public class AdminBase {
      * @param Number of Columns involved [int]
      * @return Object[] or null
      */
-    public Object[] obtainJoin(String sql, int cols) {
+    public Object[] obtainTable(String sql, int cols) {
         ArrayList<String[]> array = new ArrayList<String[]>();
 
         try {

@@ -1,6 +1,7 @@
 package quickdb.db;
 
 import quickdb.query.Query;
+import quickdb.reflection.ReflectionUtilities;
 
 /**
  *
@@ -55,6 +56,33 @@ public class AdminBinding {
 
     public boolean obtainSelect(String sql) {
         return AdminBinding.admin.obtainSelect(this, sql);
+    }
+
+    public void openAtomicBlock(){
+        this.admin.openAtomicBlock();
+    }
+
+    public void closeAtomicBlock(){
+        this.admin.closeAtomicBlock();
+    }
+
+    public void cancelAtomicBlock(){
+        this.admin.cancelAtomicBlock();
+    }
+
+    public void setAutoCommit(boolean value){
+        this.admin.setAutoCommit(value);
+    }
+
+    /**
+     * Return True if the specified Table exist in the Database
+     * @param Table Name
+     * @return Boolean
+     */
+    public boolean checkTableExist() {
+        ReflectionUtilities reflec = new ReflectionUtilities();
+        String name = reflec.readTableName(this.getClass());
+        return this.admin.checkTableExist(name);
     }
 
 }

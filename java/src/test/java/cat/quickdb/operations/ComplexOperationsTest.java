@@ -104,7 +104,7 @@ public class ComplexOperationsTest {
                 "JOIN Reference ON Reference.id = Parent.reference " +
                 "WHERE Reference.value = 'house'";
 
-        Object[] join = admin.obtainJoin(sql, 3);
+        Object[] join = admin.obtainTable(sql, 3);
         for(int i = 0; i < join.length; i++){
             String[] s = (String[]) join[i];
             Assert.assertEquals("data from son", s[0]);
