@@ -4,7 +4,7 @@ package cat.quickdb.complexDataStructure.model;
  *
  * @author Diego Sarmentero
  */
-public class SonReference {
+public class SonReference extends SonReferenceParent{
 
     private int id;
     private String description;

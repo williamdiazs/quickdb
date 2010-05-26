@@ -11,7 +11,7 @@ public class SonData extends ParentOfSon{
 
     private int id;
     private String name;
-    private double ssalary;
+    private double salary;
     private SonReference reference;
     @Column(collectionClass="java.lang.Integer")
     private ArrayList<Integer> phones;
@@ -32,8 +32,8 @@ public class SonData extends ParentOfSon{
         this.reference = reference;
     }
 
-    public void setSsalary(double ssalary) {
-        this.ssalary = ssalary;
+    public void setSalary(double salary) {
+        this.salary = salary;
     }
 
     public int getId() {
@@ -52,8 +52,8 @@ public class SonData extends ParentOfSon{
         return reference;
     }
 
-    public double getSsalary() {
-        return ssalary;
+    public double getSalary() {
+        return salary;
     }
 
 }
