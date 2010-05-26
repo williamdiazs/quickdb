@@ -647,7 +647,7 @@ public class AdminBase {
             if (!this.collection) {
                 for (int i = 0; i < objects.length; i++) {
                     if (!this.save(objects[i])) {
-                        results.add(i);
+                        results.add(i); //throw exception
                         break;
                     }
                 }

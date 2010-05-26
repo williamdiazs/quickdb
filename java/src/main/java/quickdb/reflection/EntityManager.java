@@ -16,6 +16,7 @@ import quickdb.util.Validations;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Stack;
 
 /**
@@ -25,7 +26,6 @@ import java.util.Stack;
 public class EntityManager {
 
     public enum OPERATION {
-
         SAVE, MODIFY, DELETE, OBTAIN, OTHER
     }
     private Stack<String> primaryKey;
@@ -37,6 +37,7 @@ public class EntityManager {
     private Stack<Object> originalChild;
     private ArrayList<String> manyRestore;
     private ReflectionUtilities ref;
+    private Hashtable<String, ArrayList> dictionary;
 
     public EntityManager() {
         this.ref = new ReflectionUtilities();
@@ -48,10 +49,11 @@ public class EntityManager {
         this.originalChild = new Stack<Object>();
         this.hasParent = false;
         this.manyRestore = new ArrayList<String>();
+        this.dictionary = new Hashtable<String, ArrayList>();
     }
 
     /**
-     * The ArrayList returned contain in the firste row the name of the Table
+     * The ArrayList returned contain in the first row the name of the Table
      * and then contain an String Array (Object[]) in the other rows
      * representing the name of the field and the data, and finally if exist a
      * sql statement or an empty string if there isn't a sql statement
@@ -113,10 +115,10 @@ public class EntityManager {
                 if (sql) {
                     if (oper == OPERATION.MODIFY ||
                             oper == OPERATION.DELETE) {
-                        String nameF = this.primaryKey.peek();
-                        Method getF = this.ref.obtainGetter(object.getClass(), nameF);
-                        Integer valueId = (Integer) getF.invoke(object, new Object[0]);
-                        statement = nameF + "=" + valueId;
+                        String nameSta = this.primaryKey.peek();
+                        Method getSta = this.ref.obtainGetter(object.getClass(), nameSta);
+                        Integer valueId = (Integer) getSta.invoke(object, new Object[0]);
+                        statement = nameSta + "=" + valueId;
                     } else {
                         statement = this.primaryKey.peek() + " > 0";
                     }
@@ -133,11 +135,11 @@ public class EntityManager {
 
                 if (this.ref.implementsCollection(value.getClass(), ann)) {
                     admin.setCollection(true);
-                    Class o = this.ref.obtainItemCollectionType(object.getClass(), field);
+                    Class clazz = this.ref.obtainItemCollectionType(object.getClass(), field);
                     admin.setCollectionHasName(true);
-                    this.nameCollection.push(this.ref.readTableName(o));
+                    this.nameCollection.push(this.ref.readTableName(clazz));
 
-                    if(this.ref.checkPrimitivesExtended(o, null)){
+                    if(this.ref.checkPrimitivesExtended(clazz, null)){
                         Object arrayPrimitive[] = ((Collection) value).toArray();
                         ArrayList primitiveResult = new ArrayList();
                         for(Object prim : arrayPrimitive){
@@ -215,7 +217,9 @@ public class EntityManager {
 
     public Object result2Object(AdminBase admin, Object object, ResultSet rs) {
 
+        //ArrayList dictValue = new ArrayList();
         String table1 = this.readClassName(object);
+        //dictValue.add(table1);
         boolean tempParent = this.hasParent;
         this.hasParent = false;
         Field fields[] = object.getClass().getDeclaredFields();
@@ -231,8 +235,8 @@ public class EntityManager {
             String name = field;
             Annotation ann = null;
             Object value = null;
-            Annotation annotations[] = fields[i].getAnnotations();
 
+            Annotation annotations[] = fields[i].getAnnotations();
             try {
                 for (Annotation a : annotations) {
                     if (!(a instanceof Column)) {
@@ -244,7 +248,7 @@ public class EntityManager {
                     }
                     ann = a;
                     if (((Column) a).type() == Properties.TYPES.PRIMARYKEY) {
-                        value = rs.getObject(field);
+                        value = rs.getObject(name);
                         this.primaryKeyValue.push((Integer) value);
                         searchId = false;
                     }
@@ -263,6 +267,7 @@ public class EntityManager {
 
                 Method setter = this.ref.obtainSetter(object.getClass(), field);
                 Method getter = this.ref.obtainGetter(object.getClass(), field);
+                //dictValue.add(new Object[]{name, getter, setter});
                 Object get = getter.invoke(object, new Object[0]);
                 //When the object is not initialized
                 if (get == null) {
@@ -270,8 +275,8 @@ public class EntityManager {
                 }
 
                 if (this.ref.implementsCollection(get.getClass(), ann)) {
-                    Class o2 = this.ref.obtainItemCollectionType(object.getClass(), field);
-                    String table2 = this.ref.readTableName(o2);
+                    Class clazz2 = this.ref.obtainItemCollectionType(object.getClass(), field);
+                    String table2 = this.ref.readTableName(clazz2);
                     String tempName = table1 + table2;
                     String tempTableName = table2 + table1;
 
@@ -284,9 +289,9 @@ public class EntityManager {
                     this.nameCollection.push(tempName);
                     admin.setCollectionHasName(true);
 
-                    //Suppose that "id" was readed before
+                    //Supposed that "id" was readed before
                     ArrayList results;
-                    if(this.ref.checkPrimitivesExtended(o2, null)){
+                    if(this.ref.checkPrimitivesExtended(clazz2, null)){
                         results = admin.obtainAll(PrimitiveCollec.class,
                                 forColumn + "=" + this.primaryKeyValue.pop());
                         int lengthPrimitives = results.size();
@@ -360,8 +365,8 @@ public class EntityManager {
             for (int i = 0; i < fields.length; i++) {
                 String field = fields[i].getName();
                 String name = field;
-                Annotation annotations[] = fields[i].getDeclaredAnnotations();
 
+                Annotation annotations[] = fields[i].getAnnotations();
                 for (Annotation a : annotations) {
                     if (!(a instanceof Column)) {
                         continue;
@@ -384,7 +389,7 @@ public class EntityManager {
                     primary = false;
                     String indexSon = this.ref.checkIndex(child.getClass());
                     String indexParent = this.ref.checkIndex(parent.getClass());
-                    if(indexSon.equalsIgnoreCase(indexParent)){
+                    if(indexSon.equals(indexParent)){
                         continue;
                     }
                 }
@@ -418,7 +423,7 @@ public class EntityManager {
 
         Field fields[] = object.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
-            Annotation ann[] = fields[i].getDeclaredAnnotations();
+            Annotation ann[] = fields[i].getAnnotations();
             ColumnDefined colDef;
             switch(admin.getDB()){
                 case POSTGRES:
@@ -436,9 +441,8 @@ public class EntityManager {
                         collectionBool = true;
                         continue;
                     }
-                    name = ((Column) ann[j]).name();
-                    if (name.length() == 0) {
-                        name = fields[i].getName();
+                    if (((Column) ann[j]).name().length() != 0) {
+                        name = ((Column) ann[j]).name();
                     }
                 } else if (ann[j] instanceof ColumnDefinition){
                     colDef.setType(def.obtainDataType(
@@ -484,8 +488,8 @@ public class EntityManager {
             this.primaryKey.push("id");
             for (int i = 0; i < fields.length; i++) {
                 String field = fields[i].getName();
+                
                 Annotation annotations[] = fields[i].getAnnotations();
-
                 for (Annotation a : annotations) {
                     if (!(a instanceof Column)) {
                         continue;
@@ -533,7 +537,7 @@ public class EntityManager {
 
     private String readClassName(Object object) {
         this.hasParent = false;
-        Annotation entity[] = object.getClass().getDeclaredAnnotations();
+        Annotation entity[] = object.getClass().getAnnotations();
         String entityName = object.getClass().getSimpleName();
         for (int i = 0; i < entity.length; i++) {
             if (entity[i] instanceof Table &&
@@ -595,7 +599,7 @@ public class EntityManager {
             for (Field f : fields) {
                 String foreign = f.getName();
                 Annotation ann = null;
-                Annotation annotations[] = f.getDeclaredAnnotations();
+                Annotation annotations[] = f.getAnnotations();
                 if (annotations.length > 0) {
                     for (Annotation a : annotations) {
                         if ((a instanceof Column) &&
@@ -641,14 +645,14 @@ public class EntityManager {
     public ArrayList<String[]> getCollectionsTableForDelete(Object obj, AdminBase admin) {
         ArrayList<String[]> collec = new ArrayList<String[]>();
 
-        String tableBase = this.readClassName(obj);
+        String tableBase = this.ref.readTableName(obj.getClass());
 
         try {
             Field fields[] = obj.getClass().getDeclaredFields();
             for (Field f : fields) {
                 String tableRelated = "";
                 Annotation ann = null;
-                Annotation annotations[] = f.getDeclaredAnnotations();
+                Annotation annotations[] = f.getAnnotations();
                 for (Annotation a : annotations) {
                     if (a instanceof Column) {
                         ann = a;
@@ -729,7 +733,7 @@ public class EntityManager {
     }
 
     private void modifyComponents(AdminBase admin, Object object) {
-        ArrayList<String> manys = this.getRef().isMany2Many(object.getClass());
+        ArrayList<String> manys = this.ref.isMany2Many(object.getClass());
         if (!manys.isEmpty()) {
             this.deleteMany2Many(admin, object, manys);
         }

@@ -31,7 +31,7 @@ public class ReflectionUtilities {
         for (Field f : fields) {
             Annotation ann = null;
             //Search if this field has the Column annotation
-            Annotation annotations[] = f.getDeclaredAnnotations();
+            Annotation annotations[] = f.getAnnotations();
             for (Annotation a : annotations) {
                 if (a instanceof Column) {
                     ann = a;
@@ -45,7 +45,7 @@ public class ReflectionUtilities {
                 Field fields2[] = item.getDeclaredFields();
                 for (Field f2 : fields2) {
                     Annotation ann2 = null;
-                    Annotation annotations2[] = f2.getDeclaredAnnotations();
+                    Annotation annotations2[] = f2.getAnnotations();
                     for (Annotation a : annotations2) {
                         if (a instanceof Column) {
                             ann2 = a;
@@ -76,7 +76,7 @@ public class ReflectionUtilities {
      * @return a String with the Table Name
      */
     public String readTableName(Class clazz) {
-        Annotation entity[] = clazz.getDeclaredAnnotations();
+        Annotation entity[] = clazz.getAnnotations();
         String entityName = clazz.getSimpleName();
         for (int i = 0; i < entity.length; i++) {
             if ((entity[i] instanceof Table) &&
@@ -92,16 +92,13 @@ public class ReflectionUtilities {
         String className = "";
         try{
             Field f = clazz.getDeclaredField(field);
-            Annotation annotations[] = f.getDeclaredAnnotations();
+            Annotation annotations[] = f.getAnnotations();
             for (Annotation a : annotations) {
                 if (a instanceof Column) {
                     className = ((Column) a).collectionClass();
                 }
             }
-        }catch(Exception e){
-
-        }
-
+        }catch(Exception e){}
         String path = clazz.getName().substring(0,
                 clazz.getName().lastIndexOf(".") + 1);
 
@@ -186,7 +183,7 @@ public class ReflectionUtilities {
 
         try {
             Field f = value.getDeclaredField(reference);
-            Annotation[] ann = f.getDeclaredAnnotations();
+            Annotation[] ann = f.getAnnotations();
             if (ann.length == 0) {
                 for (Class inter : f.getType().getInterfaces()) {
                     if (inter.getName().equalsIgnoreCase("java.util.List") ||
@@ -222,7 +219,7 @@ public class ReflectionUtilities {
         try {
             Field f = object.getDeclaredField(field);
             Annotation ann = null;
-            for (Annotation a : f.getDeclaredAnnotations()) {
+            for (Annotation a : f.getAnnotations()) {
                 if (a instanceof Column) {
                     ann = a;
                     break;
@@ -253,7 +250,7 @@ public class ReflectionUtilities {
         try {
             Field f = object.getDeclaredField(field);
             Annotation ann = null;
-            for (Annotation a : f.getDeclaredAnnotations()) {
+            for (Annotation a : f.getAnnotations()) {
                 if (a instanceof Column) {
                     ann = a;
                     break;
@@ -277,7 +274,7 @@ public class ReflectionUtilities {
         Field fieldsForeign[] = clazz.getDeclaredFields();
 
         for (int q = 0; q < fieldsForeign.length; q++) {
-            Annotation annForeign[] = fieldsForeign[q].getDeclaredAnnotations();
+            Annotation annForeign[] = fieldsForeign[q].getAnnotations();
 
             if (annForeign.length > 0) {
                 for (Annotation ann : annForeign) {
@@ -333,7 +330,7 @@ public class ReflectionUtilities {
 
     public boolean hasParent(Class clazz) {
         boolean value = false;
-        Annotation entity[] = clazz.getDeclaredAnnotations();
+        Annotation entity[] = clazz.getAnnotations();
         for (int i = 0; i < entity.length; i++) {
             if (entity[i] instanceof Parent) {
                 value = true;
