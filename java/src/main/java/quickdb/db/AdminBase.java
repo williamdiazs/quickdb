@@ -82,9 +82,17 @@ public class AdminBase {
         AdminBinding.initializeAdminBase(admin);
     }
 
+    public void initializeAdminBinding(){
+        AdminBinding.initializeAdminBase(this);
+    }
+
     public static void initializeViews(DATABASE db, String... args) {
         AdminBase admin = new AdminBase(db, args);
         View.initializeAllViews(admin);
+    }
+
+    public void initializeViews(){
+        View.initializeAllViews(this);
     }
 
     /**
@@ -576,6 +584,11 @@ public class AdminBase {
         }
 
         return array.toArray();
+    }
+
+    @Deprecated
+    public Object[] obtainJoin(String sql, int cols){
+        return this.obtainTable(sql, cols);
     }
 
     public Query obtain(Object obj){

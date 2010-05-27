@@ -1,6 +1,7 @@
 package quickdb.query;
 
 import java.util.ArrayList;
+import quickdb.exception.SubQueryException;
 
 /**
  *
@@ -13,12 +14,14 @@ public class Where implements IQuery {
     private DateQuery date;
     private boolean hasSub;
     private String sub;
+    private boolean waitingForSub;
 
     private Where(Query query) {
         this.query = query;
         this.condition = new StringBuilder();
         this.date = DateQuery.createDate(this);
         this.hasSub = false;
+        this.waitingForSub = false;
     }
 
     static Where createWhere(Query query) {
@@ -36,6 +39,7 @@ public class Where implements IQuery {
     }
 
     public SubQuery For(String attr, Class clazz) {
+        this.waitingForSub = false;
         SubQuery subQ = SubQuery.createSubQuery(this, attr, clazz);
         return subQ;
     }
@@ -172,6 +176,9 @@ public class Where implements IQuery {
     }
 
     private void manageOperation(String oper, Object[] object) {
+        if(this.waitingForSub){
+            throw new SubQueryException();
+        }
         if (this.hasSub) {
             this.processObject(object);
             this.condition.append(" " + oper + " ");
@@ -211,5 +218,9 @@ public class Where implements IQuery {
     @Override
     public String toString() {
         return this.condition.toString();
+    }
+
+    public void waitForSub(){
+        this.waitingForSub = true;
     }
 }

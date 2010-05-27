@@ -4,6 +4,7 @@ import quickdb.db.AdminBase;
 import quickdb.reflection.ReflectionUtilities;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
+import quickdb.exception.SubQueryCloseException;
 
 /**
  *
@@ -79,27 +80,49 @@ public class Query implements IQuery {
         return this.If(field, clazz);
     }
 
-    public Where and(String field, Object... clazz) {
-        this.where.addCondition("AND");
-        String whereCondition = this.processRequest(field, clazz);
-        if (this.having == null) {
-            this.where.addCondition(whereCondition);
+    public Where and(Object... condition) {
+        if(condition.length == 0){
+            this.where.addCondition("AND");
+            this.where.waitForSub();
             return this.where;
-        } else {
-            this.having.addCondition(whereCondition);
-            return this.having;
+        }else{
+            String field = String.valueOf(condition[0]);
+            Object[] clazz = new Object[condition.length-1];
+            for(int i = 0; i < condition.length-1; i++){
+                clazz[i] = condition[i+1];
+            }
+            this.where.addCondition("AND");
+            String whereCondition = this.processRequest(field, clazz);
+            if (this.having == null) {
+                this.where.addCondition(whereCondition);
+                return this.where;
+            } else {
+                this.having.addCondition(whereCondition);
+                return this.having;
+            }
         }
     }
 
-    public Where or(String field, Object... clazz) {
-        this.where.addCondition("OR");
-        String whereCondition = this.processRequest(field, clazz);
-        if (this.having == null) {
-            this.where.addCondition(whereCondition);
+    public Where or(Object... condition) {
+        if(condition.length == 0){
+            this.where.addCondition("OR");
+            this.where.waitForSub();
             return this.where;
-        } else {
-            this.having.addCondition(whereCondition);
-            return this.having;
+        }else{
+            String field = String.valueOf(condition[0]);
+            Object[] clazz = new Object[condition.length-1];
+            for(int i = 0; i < condition.length-1; i++){
+                clazz[i] = condition[i+1];
+            }
+            this.where.addCondition("OR");
+            String whereCondition = this.processRequest(field, clazz);
+            if (this.having == null) {
+                this.where.addCondition(whereCondition);
+                return this.where;
+            } else {
+                this.having.addCondition(whereCondition);
+                return this.having;
+            }
         }
     }
 
@@ -344,5 +367,9 @@ public class Query implements IQuery {
 
     void addEndFrom(String fromTable) {
         this.from.append(fromTable);
+    }
+
+    public Where closeFor(){
+        throw new SubQueryCloseException();
     }
 }
