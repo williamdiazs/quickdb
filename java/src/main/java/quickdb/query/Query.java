@@ -276,9 +276,7 @@ public class Query implements IQuery {
         int inher = 0;
         if(c.isInstance(this.object)){
             inher = StringQuery.inheritedAttribute(this.obtainClassBase(), field);
-        }else{
-
-        }
+        }else{}
         String whereCondition;
         if (this.obtainClassBase() == value) {
             whereCondition = this.table + "." + colMain;
@@ -290,9 +288,11 @@ public class Query implements IQuery {
         } else {
             Class clazzResult;
             String fieldResult;
-            if (clazz.length == 3) {
-                fieldResult = String.valueOf(clazz[2]);
-                clazzResult = StringQuery.obtainReference(c, fieldResult);
+            if (clazz.length == 2) {
+                fieldResult = String.valueOf(clazz[1]);
+                int inherRef = StringQuery.inheritedAttribute(this.obtainClassBase(), fieldResult);
+                clazzResult = this.obtainClassBase();
+                for(int i=0; i < inherRef; i++){clazzResult = clazzResult.getSuperclass();}
             } else {
                 Object[] result = StringQuery.obtainReferenceByReturn(this.object.getClass(), c);
                 clazzResult = (Class) result[0];

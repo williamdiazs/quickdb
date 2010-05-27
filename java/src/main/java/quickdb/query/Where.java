@@ -39,6 +39,9 @@ public class Where implements IQuery {
     }
 
     public SubQuery For(String attr, Class clazz) {
+        if(!this.waitingForSub){
+            throw new SubQueryException("For was not expected.");
+        }
         this.waitingForSub = false;
         SubQuery subQ = SubQuery.createSubQuery(this, attr, clazz);
         return subQ;
