@@ -293,6 +293,7 @@ public class Query implements IQuery {
                 int inherRef = StringQuery.inheritedAttribute(this.obtainClassBase(), fieldResult);
                 clazzResult = this.obtainClassBase();
                 for(int i=0; i < inherRef; i++){clazzResult = clazzResult.getSuperclass();}
+                this.checkForCollection(clazzResult, fieldResult);
             } else {
                 Object[] result = StringQuery.obtainReferenceByReturn(this.object.getClass(), c);
                 clazzResult = (Class) result[0];
@@ -338,6 +339,28 @@ public class Query implements IQuery {
         }
 
         return whereCondition;
+    }
+
+    private void checkForCollection(Class clazz, String field){
+        if(this.reflec.implementsCollection(clazz, field)){
+            String table1 = this.reflec.readTableName(clazz);
+            Class clazz2 = this.reflec.obtainItemCollectionType(clazz, field);
+            String table2 = this.reflec.readTableName(clazz2);
+            String index1 = this.reflec.checkIndex(clazz);
+            String index2 = this.reflec.checkIndex(clazz2);
+            String table = table1 + table2;
+            String col1 = "base";
+            String col2 = "related";
+            if(!this.admin.checkTableExist(table)){
+                table = table2 + table1;
+                col1 = "related";
+                col2 = "base";
+            }
+            this.from.append(" JOIN " +
+                    table + " ON " + table + "." + col1 + " = " + table1 + "." + index1 +
+                    " JOIN " + table2 + " ON " + table2 + "." + index2 + " = " +
+                    table + "." + col2);
+        }
     }
 
     void addInheritanceRelation(Class clazz, int inherit) {

@@ -88,7 +88,7 @@ public class ReflectionUtilities {
         return entityName;
     }
 
-    Class obtainItemCollectionType(Class clazz, String field) {
+    public Class obtainItemCollectionType(Class clazz, String field) {
         String className = "";
         try{
             Field f = clazz.getDeclaredField(field);
@@ -270,7 +270,7 @@ public class ReflectionUtilities {
         }
     }
 
-    String checkIndex(Class clazz) {
+    public String checkIndex(Class clazz) {
         Field fieldsForeign[] = clazz.getDeclaredFields();
 
         for (int q = 0; q < fieldsForeign.length; q++) {
