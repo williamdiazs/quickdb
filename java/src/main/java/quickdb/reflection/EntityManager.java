@@ -137,9 +137,10 @@ public class EntityManager {
                     admin.setCollection(true);
                     Class clazz = this.ref.obtainItemCollectionType(object.getClass(), field);
                     admin.setCollectionHasName(true);
-                    this.nameCollection.push(this.ref.readTableName(clazz));
 
                     if(this.ref.checkPrimitivesExtended(clazz, null)){
+                        this.nameCollection.push(this.ref.readTableName(clazz)+
+                                field.substring(0, 1).toUpperCase() + field.substring(1));
                         Object arrayPrimitive[] = ((Collection) value).toArray();
                         ArrayList primitiveResult = new ArrayList();
                         for(Object prim : arrayPrimitive){
@@ -148,6 +149,7 @@ public class EntityManager {
                         }
                         this.collection.push(primitiveResult);
                     }else{
+                        this.nameCollection.push(this.ref.readTableName(clazz));
                         switch (oper) {
                             case SAVE:
                                 this.collection.push(admin.saveAll(((Collection) value)));
@@ -292,6 +294,8 @@ public class EntityManager {
                     //Supposed that "id" was readed before
                     ArrayList results;
                     if(this.ref.checkPrimitivesExtended(clazz2, null)){
+                        this.nameCollection.push(this.nameCollection.pop()+
+                                field.substring(0, 1).toUpperCase()+field.substring(1));
                         results = admin.obtainAll(PrimitiveCollec.class,
                                 forColumn + "=" + this.primaryKeyValue.pop());
                         int lengthPrimitives = results.size();

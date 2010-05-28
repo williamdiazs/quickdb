@@ -184,6 +184,11 @@ public class Where implements IQuery {
         }
         if (this.hasSub) {
             this.processObject(object);
+            if(oper.contains("<")){
+                oper = oper.replace("<", ">");
+            }else if(oper.contains(">")){
+                oper = oper.replace(">", "<");
+            }
             this.condition.append(" " + oper + " ");
             this.condition.append(" " + this.sub + " ");
             this.hasSub = false;
