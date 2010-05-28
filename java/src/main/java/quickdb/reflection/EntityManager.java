@@ -310,8 +310,10 @@ public class EntityManager {
                             object, name, forColumn, tempName);
                     }
 
+                    Object valueCollection = this.ref.emptyInstance(get.getClass());
+                    ((Collection) valueCollection).addAll(results);
                     admin.setCollectionHasName(false);
-                    setter.invoke(object, new Object[]{results});
+                    setter.invoke(object, new Object[]{valueCollection});
                     continue;
                 } else {
                     value = rs.getObject(name);
