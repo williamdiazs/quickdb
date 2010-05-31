@@ -133,7 +133,7 @@ public class ViewTest {
         view.initializeAdminBase(admin);
         ArrayList array = view.obtainAll();
 
-        Assert.assertTrue( (array.size() > 1) );
+        Assert.assertTrue( (array.size() > 0) );
         int size = array.size();
         for(int i = 0; i < size; i++){
             ViewObject v = (ViewObject) array.get(i);
@@ -158,7 +158,7 @@ public class ViewTest {
         view.initializeAdminBase(admin);
         ArrayList array = view.obtainAll();
 
-        Assert.assertTrue( (array.size() > 1) );
+        Assert.assertTrue( (array.size() > 0) );
         int size = array.size();
         for(int i = 0; i < size; i++){
             ViewObjectString v = (ViewObjectString) array.get(i);

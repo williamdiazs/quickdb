@@ -114,7 +114,6 @@ public class AdminBase {
                     EntityManager.OPERATION.SAVE);
 
             value = this.saveProcess(array, object);
-            this.manager.getPrimaryKey();
 
             this.commit = commitValue;
             if(this.commit || this.autoCommit){
@@ -215,7 +214,6 @@ public class AdminBase {
             this.commit = true;
         }
 
-        this.manager.getPrimaryKey();
         return index;
     }
 

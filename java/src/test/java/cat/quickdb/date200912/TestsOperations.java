@@ -191,11 +191,10 @@ public class TestsOperations {
 
     @Test
     public void testCollectionModify(){
-
         admin.executeQuery("DROP TABLE Delete1");
         admin.executeQuery("DROP TABLE Delete2");
-        admin.executeQuery("DROP TABLE Delete1Delete2");
-        admin.executeQuery("DROP TABLE Delete2Delete1");
+        admin.executeQuery("DROP TABLE Delete1Delete2Delete2");
+        admin.executeQuery("DROP TABLE Delete2Delete1Delete1");
 
         Delete2 d2a2 = new Delete2();
         d2a2.setName("delete2 - prueba1");
@@ -250,8 +249,8 @@ public class TestsOperations {
     public void testCollectionDelete(){
         admin.executeQuery("DROP TABLE Delete1");
         admin.executeQuery("DROP TABLE Delete2");
-        admin.executeQuery("DROP TABLE Delete1Delete2");
-        admin.executeQuery("DROP TABLE Delete2Delete1");
+        admin.executeQuery("DROP TABLE Delete1Delete2Delete2");
+        admin.executeQuery("DROP TABLE Delete2Delete1Delete1");
 
         Delete2 d2a = new Delete2();
         d2a.setName("delete2 - prueba1");
@@ -279,8 +278,8 @@ public class TestsOperations {
     public void completeDelete(){
         admin.executeQuery("DROP TABLE Delete1");
         admin.executeQuery("DROP TABLE Delete2");
-        admin.executeQuery("DROP TABLE Delete1Delete2");
-        admin.executeQuery("DROP TABLE Delete2Delete1");
+        admin.executeQuery("DROP TABLE Delete1Delete2Delete2");
+        admin.executeQuery("DROP TABLE Delete2Delete1Delete1");
         
         Delete2 d2a = new Delete2();
         d2a.setName("delete2 - prueba1");

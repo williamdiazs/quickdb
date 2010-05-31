@@ -18,6 +18,7 @@ import java.sql.Timestamp;
 import java.util.Collection;
 import java.util.Hashtable;
 import java.util.Stack;
+import javax.print.attribute.standard.Fidelity;
 
 /**
  *
@@ -32,6 +33,7 @@ public class EntityManager {
     private Stack<Integer> primaryKeyValue;
     private boolean dropDown;
     private Stack<ArrayList> collection;
+    private Stack<Integer> sizeCollection;
     private Stack<String> nameCollection;
     private boolean hasParent;
     private Stack<Object> originalChild;
@@ -43,6 +45,7 @@ public class EntityManager {
         this.ref = new ReflectionUtilities();
         this.primaryKey = new Stack<String>();
         this.collection = new Stack<ArrayList>();
+        this.sizeCollection = new Stack<Integer>();
         this.dropDown = true;
         this.nameCollection = new Stack<String>();
         this.primaryKeyValue = new Stack<Integer>();
@@ -72,6 +75,8 @@ public class EntityManager {
         boolean tempParent = this.hasParent;
         this.hasParent = false;
 
+        int primKeyItems = this.primaryKey.size();
+        int sizeCollectionInt = 0;
         this.primaryKey.push("id");
         Field fields[] = object.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
@@ -137,10 +142,10 @@ public class EntityManager {
                     admin.setCollection(true);
                     Class clazz = this.ref.obtainItemCollectionType(object.getClass(), field);
                     admin.setCollectionHasName(true);
+                    this.nameCollection.push(this.ref.readTableName(clazz)+
+                                field.substring(0, 1).toUpperCase() + field.substring(1));
 
                     if(this.ref.checkPrimitivesExtended(clazz, null)){
-                        this.nameCollection.push(this.ref.readTableName(clazz)+
-                                field.substring(0, 1).toUpperCase() + field.substring(1));
                         Object arrayPrimitive[] = ((Collection) value).toArray();
                         ArrayList primitiveResult = new ArrayList();
                         for(Object prim : arrayPrimitive){
@@ -148,14 +153,16 @@ public class EntityManager {
                             primitiveResult.add(primitive);
                         }
                         this.collection.push(primitiveResult);
+                        sizeCollectionInt++;
                     }else{
-                        this.nameCollection.push(this.ref.readTableName(clazz));
                         switch (oper) {
                             case SAVE:
                                 this.collection.push(admin.saveAll(((Collection) value)));
+                                sizeCollectionInt++;
                                 break;
                             case MODIFY:
                                 this.collection.push(admin.modifyAll(((Collection) value)));
+                                sizeCollectionInt++;
                                 break;
                         }
                     }
@@ -202,6 +209,10 @@ public class EntityManager {
                 return null;
             }
         }
+        
+        if(sizeCollectionInt != 0){
+            this.sizeCollection.push(sizeCollectionInt);
+        }
         this.hasParent = tempParent;
         boolean tempCollec = admin.getCollection();
         admin.setCollection(false);
@@ -214,11 +225,13 @@ public class EntityManager {
         }
         admin.setCollection(tempCollec);
         array.add(statement);
+        for(int i = this.primaryKey.size()-1; i >= primKeyItems; i--){
+            this.primaryKey.removeElementAt(i);
+        }
         return array;
     }
 
     public Object result2Object(AdminBase admin, Object object, ResultSet rs) {
-
         //ArrayList dictValue = new ArrayList();
         String table1 = this.readClassName(object);
         //dictValue.add(table1);
@@ -228,7 +241,9 @@ public class EntityManager {
         boolean searchId = true;
         if(View.class.isInstance(object)){
             searchId = false;
+            this.primaryKeyValue.push(1);
         }
+        int primKeyItems = this.primaryKey.size();
         this.primaryKey.push("id");
         boolean ignore = false;
 
@@ -279,8 +294,10 @@ public class EntityManager {
                 if (this.ref.implementsCollection(get.getClass(), ann)) {
                     Class clazz2 = this.ref.obtainItemCollectionType(object.getClass(), field);
                     String table2 = this.ref.readTableName(clazz2);
-                    String tempName = table1 + table2;
-                    String tempTableName = table2 + table1;
+                    String fieldName = field.substring(0, 1).toUpperCase() +
+                            field.substring(1);
+                    String tempName = table1 + table2 + fieldName;
+                    String tempTableName = table2 + table1 + fieldName;
 
                     String forColumn = "base";
                     if (!admin.checkTableExist(tempName) &&
@@ -294,17 +311,15 @@ public class EntityManager {
                     //Supposed that "id" was readed before
                     ArrayList results;
                     if(this.ref.checkPrimitivesExtended(clazz2, null)){
-                        this.nameCollection.push(this.nameCollection.pop()+
-                                field.substring(0, 1).toUpperCase()+field.substring(1));
                         results = admin.obtainAll(PrimitiveCollec.class,
-                                forColumn + "=" + this.primaryKeyValue.pop());
+                                forColumn + "=" + this.primaryKeyValue.peek());
                         int lengthPrimitives = results.size();
                         for(int q = 0; q < lengthPrimitives; q++){
                             results.set(q, ((PrimitiveCollec)results.get(q)).getObject());
                         }
                     }else{
                         results = admin.obtainAll(M2mTable.class,
-                                forColumn + "=" + this.primaryKeyValue.pop());
+                                forColumn + "=" + this.primaryKeyValue.peek());
                         admin.setCollectionHasName(false);
                         results = this.restoreCollection(admin, results,
                             object, name, forColumn, tempName);
@@ -341,8 +356,6 @@ public class EntityManager {
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
-            } finally {
-                this.primaryKey.removeAllElements();
             }
         }
         this.hasParent = tempParent;
@@ -350,6 +363,10 @@ public class EntityManager {
         if (this.hasParent) {
             this.hasParent = false;
             this.restoreParent(admin, object, rs);
+        }
+        for(int i = this.primaryKey.size()-1; i >= primKeyItems; i--){
+            this.primaryKey.removeElementAt(i);
+            this.primaryKeyValue.removeElementAt(i);
         }
 
         return object;
@@ -709,11 +726,13 @@ public class EntityManager {
 
                 Object array[] = ((Collection) obj).toArray();
                 if (array.length > 0) {
+                    String fieldName = s.substring(0, 1).toUpperCase() +
+                            s.substring(1);
                     String table1 = this.ref.readTableName(object.getClass());
                     String table2 = this.ref.readTableName(array[0].getClass());
-                    String relation = table1 + table2;
+                    String relation = table1 + table2 + fieldName;
                     if (!admin.checkTableExist(relation)) {
-                        relation = table2 + table1;
+                        relation = table2 + table1 + fieldName;
                     }
                     for (Object o2 : array) {
                         this.modifyComponents(admin, o2);
@@ -763,14 +782,6 @@ public class EntityManager {
         return value;
     }
 
-    public String getPrimaryKey() {
-        return this.primaryKey.pop();
-    }
-
-    public String peekPrimaryKey() {
-        return this.primaryKey.peek();
-    }
-
     public void setDropDown(boolean dropDown) {
         this.dropDown = dropDown;
     }
@@ -780,7 +791,7 @@ public class EntityManager {
     }
 
     public int sizeCollectionStack() {
-        return this.collection.size();
+        return this.sizeCollection.pop();
     }
 
     public String getNameCollection() {

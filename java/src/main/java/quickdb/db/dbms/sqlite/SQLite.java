@@ -16,7 +16,7 @@ public class SQLite {
             Object[] objects, EntityManager manager){
 
         StringBuilder statement = new StringBuilder();
-        String primaryKey = manager.peekPrimaryKey();
+        String primaryKey = String.valueOf(((Object[])objects[1])[0]);
         statement.append(String.format("CREATE TABLE IF NOT EXISTS " +
                 "%s (", objects[0]));
 

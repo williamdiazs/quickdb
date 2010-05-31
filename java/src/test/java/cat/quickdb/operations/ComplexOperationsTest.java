@@ -23,7 +23,6 @@ public class ComplexOperationsTest {
         this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
                 QuickDBTests.port, QuickDBTests.instanceDB,
                 QuickDBTests.user, QuickDBTests.pass);
-        this.admin.setAutoCommit(true);
     }
 
     @Test
@@ -98,6 +97,18 @@ public class ComplexOperationsTest {
 
     @Test
     public void testObtainJoin(){
+        Reference ref = new Reference();
+        ref.setValue("house");
+
+        Son son = new Son();
+        son.setData("data from son");
+        son.setSonName("child");
+        son.setDescription("parent description");
+        son.setReference(ref);
+
+        boolean value = admin.save(son);
+        Assert.assertTrue(value);
+        
         String sql = "SELECT Son.data, Parent.description, Reference.value " +
                 "FROM Son " +
                 "JOIN Parent ON Parent.id = Son.parent_id " +
@@ -144,13 +155,11 @@ public class ComplexOperationsTest {
         m.add(m2b);
         many.setMany2(m);
 
-        boolean value = admin.save(many);
-        Assert.assertTrue(value);
+        Assert.assertTrue(admin.save(many));
 
         Many1 many1 = new Many1();
-
-        value = admin.obtainWhere(many1, "description = 'description of principal many'");
-        Assert.assertTrue(value);
+        admin.obtainWhere(many1, "description = 'description of principal many'");
+        Assert.assertEquals("description4 m2b", ((Many1)((Many2)many1.getMany2().get(1)).getMany1().get(1)).getDescription());
     }
 
     @Test

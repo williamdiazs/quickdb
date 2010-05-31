@@ -20,7 +20,7 @@ public class Firebird {
         DataType dataType = new DataType();
         StringBuilder colDefinition = new StringBuilder();
         StringBuilder constraints = new StringBuilder();
-        String primaryKey = manager.peekPrimaryKey();
+        String primaryKey = String.valueOf(((Object[])objects[1])[0]);
         statement.append(String.format("CREATE TABLE " +
                 "%s (", objects[0]));
         String close = String.format(", PRIMARY KEY (%s))", primaryKey);

@@ -20,7 +20,7 @@ public class MySQL {
         DataType dataType = new DataType();
         StringBuilder colDefinition = new StringBuilder();
         StringBuilder constraints = new StringBuilder();
-        String primaryKey = manager.peekPrimaryKey();
+        String primaryKey = String.valueOf(((Object[])objects[1])[0]);
         statement.append(String.format("CREATE TABLE IF NOT EXISTS " +
                 "%s (", objects[0]));
         String close = String.format(", PRIMARY KEY (%s)) " +

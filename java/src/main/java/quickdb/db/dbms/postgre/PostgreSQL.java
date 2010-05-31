@@ -20,7 +20,7 @@ public class PostgreSQL {
         DataTypePostgre dataType = new DataTypePostgre();
         StringBuilder colDefinition = new StringBuilder();
         StringBuilder constraints = new StringBuilder();
-        String primaryKey = manager.peekPrimaryKey();
+        String primaryKey = String.valueOf(((Object[])objects[1])[0]);
         statement.append(String.format("CREATE TABLE " +
                 "%s (", admin.getConex().getSchema() + ".\"" + objects[0] + "\""));
         String close = String.format(", CONSTRAINT pk_" + objects[0] + "_" +
