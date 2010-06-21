@@ -47,11 +47,8 @@ class ConnectionDB:
     def insert_row(self, tablename, data):
         """Insert a row in a table"""
         try:
-            query = "INSERT INTO "+tablename+"("+",".join(data[0])+") VALUES (%s)"
-            print query
-            print data[1]
-            self._cursor.execute(query , data[1])
-            print 'success'
+            self._cursor.execute("INSERT INTO "+tablename+"(" + ",".join(data[0]) + ")"\
+            " VALUES (" + ("%s,"*len(data[1]))[:-1] + ")", data[1])
         except (Exception), e:
             print "insert_row",e
 
@@ -59,16 +56,17 @@ class ConnectionDB:
         try:
             self._connection.commit()
         except (Exception), e:
-            print "commit",e
+            print "Commit exception:",e
 
 if __name__ == '__main__':
     import datetime
-    conn_db = ConnectionDB(namedb='quickdb', user='quickdb', password='quickdb')
+    conn_db = ConnectionDB(namedb='test', user='root')
     conn_db.connect_mysql()
-    col = ['nombre','fecha_pub']
-    val = ['analisis', 21062010]
-    mat = [col, val]
-    conn_db.insert_row('libro',mat)
+    col = ['nombre','fecha', 'salary', 'date']
+    import datetime
+    val = ['analisis', 234, 50.69, datetime.date.today()]
+    data = [col, val]
+    conn_db.insert_row('libro', data)
     conn_db.commit()
     conn_db.close_connection()
 
