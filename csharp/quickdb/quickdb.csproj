@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <PropertyGroup>
+    <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
+    <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
+    <ProductVersion>8.0.50727</ProductVersion>
+    <SchemaVersion>2.0</SchemaVersion>
+    <ProjectGuid>{8DC9DC6C-2611-4570-AF94-17BDC5A85848}</ProjectGuid>
+    <OutputType>Library</OutputType>
+    <AssemblyName>quickdb</AssemblyName>
+    <newfilesearch>OnLoadAutoInsert</newfilesearch>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
+    <DebugSymbols>true</DebugSymbols>
+    <DebugType>full</DebugType>
+    <Optimize>true</Optimize>
+    <OutputPath>bin\Debug</OutputPath>
+    <DefineConstants>DEBUG</DefineConstants>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+    <CheckForOverflowUnderflow>true</CheckForOverflowUnderflow>
+  </PropertyGroup>
+  <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Release|AnyCPU' ">
+    <DebugType>none</DebugType>
+    <Optimize>false</Optimize>
+    <OutputPath>bin\Release</OutputPath>
+    <ErrorReport>prompt</ErrorReport>
+    <WarningLevel>4</WarningLevel>
+    <ConsolePause>false</ConsolePause>
+  </PropertyGroup>
+  <ItemGroup>
+    <Reference Include="System" />
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="AssemblyInfo.cs" />
+    <Compile Include="attribute\ColumnAttribute.cs" />
+    <Compile Include="attribute\ColumnDefinitionAttribute.cs" />
+    <Compile Include="attribute\Properties.cs" />
+    <Compile Include="attribute\Definition.cs" />
+    <Compile Include="exception\ConnectionException.cs" />
+    <Compile Include="exception\QueryException.cs" />
+    <Compile Include="attribute\ParentAttribute.cs" />
+    <Compile Include="attribute\TableAttribute.cs" />
+    <Compile Include="reflection\EntityManager.cs" />
+    <Compile Include="reflection\ReflectionUtilities.cs" />
+    <Compile Include="db\AdminBase.cs" />
+  </ItemGroup>
+  <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />
+  <ItemGroup>
+    <Folder Include="attribute\" />
+    <Folder Include="db\" />
+    <Folder Include="exception\" />
+    <Folder Include="modelSupport\" />
+    <Folder Include="query\" />
+    <Folder Include="reflection\" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="quickdb.userprefs" />
+    <None Include="quickdb.usertasks" />
+  </ItemGroup>
+  <ProjectExtensions>
+    <MonoDevelop>
+      <Properties InternalTargetFrameworkVersion="3.5" />
+    </MonoDevelop>
+  </ProjectExtensions>
+</Project>
