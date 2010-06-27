@@ -151,8 +151,13 @@ public class EntityManager {
                             PrimitiveCollec primitive = new PrimitiveCollec(prim);
                             primitiveResult.add(primitive);
                         }
-                        this.collection.push(primitiveResult);
-                        sizeCollectionInt++;
+                        switch (oper) {
+                            case SAVE:
+                            case MODIFY:
+                                this.collection.push(primitiveResult);
+                                sizeCollectionInt++;
+                                break;
+                        }
                     }else{
                         switch (oper) {
                             case SAVE:
@@ -165,7 +170,8 @@ public class EntityManager {
                                 break;
                         }
                     }
-                    
+
+                    if(sizeCollectionInt == 0) this.nameCollection.pop();
                     admin.setCollectionHasName(false);
                 } else if (!this.ref.checkPrimitivesExtended(value.getClass(), ann)) {
                     if (this.dropDown && !wasNull) {
