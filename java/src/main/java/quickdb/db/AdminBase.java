@@ -535,8 +535,7 @@ public class AdminBase {
             }
             this.arrayRs.push(this.rs);
 
-            if (rs.next() && (this.manager.result2Object(this,
-                    object, rs) != null)) {
+            if (rs.next() && (this.manager.result2Object(this, object, rs) != null)) {
                 return true;
             }
         } catch (Exception e) {
