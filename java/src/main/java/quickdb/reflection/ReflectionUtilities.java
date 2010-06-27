@@ -289,6 +289,17 @@ public class ReflectionUtilities {
         return "id";
     }
 
+    public int checkIndexValue(Object object){
+        int index = 0;
+        try{
+            Field fields[] = object.getClass().getDeclaredFields();
+            String field = fields[0].getName();
+            Method getter = this.obtainGetter(object.getClass(), field);
+            index = (Integer) getter.invoke(object, new Object[0]);
+        }catch(Exception e){}
+        return index;
+    }
+
     public boolean checkPrimitivesExtended(Class clazz, Annotation a) {
         if (a == null) {
             if (clazz == Integer.class ||

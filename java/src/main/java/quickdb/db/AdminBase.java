@@ -355,10 +355,7 @@ public class AdminBase {
     }
 
     private int modifyGetIndex(Object object) {
-        ArrayList array = this.manager.entity2Array(this, object,
-                EntityManager.OPERATION.MODIFY);
-
-        int index = (Integer) ((Object[]) array.get(1))[1];
+        int index = this.manager.getRef().checkIndexValue(object);
         /*If the index is greater than 0 it means that the Object already
         exist in the Database and has to be modify, if index is lower than
         0 it means that this is a new Object that has to be added to the
