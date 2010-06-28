@@ -15,37 +15,37 @@ import java.util.regex.Pattern;
  */
 public class Validations {
 
-    public static boolean isValidField(Object obj, Field f, 
-            Annotation ann, ReflectionUtilities reflec){
-        Method getter = reflec.obtainGetter(obj.getClass(), f.getName());
+    public static boolean isValidField(Object obj, String f,
+            Validation ann, ReflectionUtilities reflec){
+        Method getter = reflec.obtainGetter(obj.getClass(), f);
         Object fieldValue = null;
         try{
             fieldValue = getter.invoke(obj, new Object[0]);
         }catch(Exception e){}
         boolean value = true;
 
-        if(((Validation)ann).maxLength() != -1){
-            value &= ( String.valueOf(fieldValue).length() <= ((Validation)ann).maxLength() );
+        if(ann.maxLength() != -1){
+            value &= ( String.valueOf(fieldValue).length() <= ann.maxLength() );
         }
-        if(((Validation)ann).conditionMatch().length != 0 &&
-                !((Validation)ann).conditionMatch()[0].equalsIgnoreCase("")){
-            for(String s : ((Validation)ann).conditionMatch()){
+        if(ann.conditionMatch().length != 0 &&
+                !ann.conditionMatch()[0].equalsIgnoreCase("")){
+            for(String s : ann.conditionMatch()){
                 Pattern p = Pattern.compile(s);
                 Matcher m = p.matcher(String.valueOf(fieldValue));
                 value &= m.matches();
             }
         }
-        if(((Validation)ann).numeric().length > 1){
+        if(ann.numeric().length > 1){
             double val = Double.parseDouble(String.valueOf(fieldValue));
-            int[] numeric = ((Validation)ann).numeric();
+            int[] numeric = ann.numeric();
             for(int i = 0; i < numeric.length; i += 2){
                 value &= Validations.checkCondition(numeric[i], numeric[i+1], val);
             }
         }
-        if(((Validation)ann).date().length > 2){
+        if(ann.date().length > 2){
             if(fieldValue instanceof Date){
                 Date date = (Date) fieldValue;
-                int[] dates = ((Validation)ann).date();
+                int[] dates = ann.date();
                 for(int i = 0; i < dates.length; i += 3){
                     int check = dates[i+2];
                     int val = 0;
