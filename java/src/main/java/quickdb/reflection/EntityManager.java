@@ -16,8 +16,8 @@ import quickdb.util.Validations;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Hashtable;
 import java.util.Stack;
+import quickdb.exception.DictionaryIncompleteException;
 
 /**
  *
@@ -26,19 +26,19 @@ import java.util.Stack;
 public class EntityManager {
 
     public enum OPERATION {
+
         SAVE, MODIFY, DELETE, OBTAIN, OTHER
     }
-    private Stack<String> primaryKey;
-    private Stack<Integer> primaryKeyValue;
-    private boolean dropDown;
-    private Stack<ArrayList> collection;
-    private Stack<Integer> sizeCollection;
-    private Stack<String> nameCollection;
-    private boolean hasParent;
-    private Stack<Object> originalChild;
+    Stack<String> primaryKey;
+    Stack<Integer> primaryKeyValue;
+    Stack<ArrayList> collection;
+    Stack<Integer> sizeCollection;
+    Stack<String> nameCollection;
+    Stack<Object> originalChild;
+    boolean hasParent;
+    boolean dropDown;
     private ArrayList<String> manyRestore;
     private ReflectionUtilities ref;
-    private Hashtable<String, ArrayList> dictionary;
 
     public EntityManager() {
         this.ref = new ReflectionUtilities();
@@ -51,7 +51,6 @@ public class EntityManager {
         this.originalChild = new Stack<Object>();
         this.hasParent = false;
         this.manyRestore = new ArrayList<String>();
-        this.dictionary = new Hashtable<String, ArrayList>();
     }
 
     /**
@@ -65,12 +64,22 @@ public class EntityManager {
     public ArrayList entity2Array(AdminBase admin, Object object,
             OPERATION oper) {
 
+        EntityDictionary dictionary = new EntityDictionary();
+        try {
+            if (dictionary.contains(object.getClass().getName())) {
+                return dictionary.entity2Array(admin, this, object, oper);
+            }
+        } catch (DictionaryIncompleteException excep) {
+        }
+
         ArrayList array = new ArrayList();
         boolean sql = true;
         boolean ignore = false;
         String statement = "";
 
-        array.add(this.readClassName(object));
+        String tableName = this.readClassName(object);
+        dictionary.newDictObject(tableName, hasParent, null);
+        array.add(tableName);
         boolean tempParent = this.hasParent;
         this.hasParent = false;
 
@@ -79,8 +88,10 @@ public class EntityManager {
         this.primaryKey.push("id");
         Field fields[] = object.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
+            DictionaryBody body = new DictionaryBody();
             Object objs[] = new Object[2];
             String field = fields[i].getName();
+            body.setFieldName(field);
             objs[0] = field;
             Annotation ann = null;
 
@@ -93,21 +104,24 @@ public class EntityManager {
                     }
 
                     ignore = ((Column) a).ignore();
-                    
+
                     ann = a;
                     if (((Column) a).type() == Properties.TYPES.PRIMARYKEY) {
                         this.primaryKey.pop();
                         primaryKey.push(objs[0].toString());
+                        body.setDataType(Properties.TYPES.PRIMARYKEY);
                         continue;
                     }
-                }else if(a instanceof Validation){
-                    if(!Validations.isValidField(object, fields[i], a, ref)){
+                } else if (a instanceof Validation) {
+                    body.setValidation((Validation) a);
+                    if (!Validations.isValidField(object, fields[i].getName(), ((Validation)a), ref)) {
                         return null;
                     }
                 } else {
                     continue;
                 }
             }
+            body.setColName(objs[0].toString());
 
             if (ignore) {
                 ignore = false;
@@ -117,8 +131,8 @@ public class EntityManager {
             try {
                 //Assign Data to Array
                 if (sql) {
-                    if (oper == OPERATION.MODIFY ||
-                            oper == OPERATION.DELETE) {
+                    if (oper == OPERATION.MODIFY
+                            || oper == OPERATION.DELETE) {
                         String nameSta = this.primaryKey.peek();
                         Method getSta = this.ref.obtainGetter(object.getClass(), nameSta);
                         Integer valueId = (Integer) getSta.invoke(object, new Object[0]);
@@ -130,6 +144,9 @@ public class EntityManager {
                 }
 
                 Method getter = this.ref.obtainGetter(object.getClass(), field);
+                Method setter = this.ref.obtainSetter(object.getClass(), field);
+                body.setGet(getter);
+                body.setSet(setter);
                 Object value = getter.invoke(object, new Object[0]);
                 boolean wasNull = false;
                 if (value == null) {
@@ -138,16 +155,18 @@ public class EntityManager {
                 }
 
                 if (this.ref.implementsCollection(value.getClass(), ann)) {
+                    body.setDataType(Properties.TYPES.COLLECTION);
                     admin.setCollection(true);
                     Class clazz = this.ref.obtainItemCollectionType(object.getClass(), field);
+                    body.setCollectionClass(clazz);
                     admin.setCollectionHasName(true);
-                    this.nameCollection.push(this.ref.readTableName(clazz)+
-                                field.substring(0, 1).toUpperCase() + field.substring(1));
+                    this.nameCollection.push(this.ref.readTableName(clazz)
+                            + field.substring(0, 1).toUpperCase() + field.substring(1));
 
-                    if(this.ref.checkPrimitivesExtended(clazz, null)){
-                        Object arrayPrimitive[] = ((Collection) value).toArray();
+                    if (this.ref.checkPrimitivesExtended(clazz, null)) {
+                        Object[] arrayPrimitive = ((Collection) value).toArray();
                         ArrayList primitiveResult = new ArrayList();
-                        for(Object prim : arrayPrimitive){
+                        for (Object prim : arrayPrimitive) {
                             PrimitiveCollec primitive = new PrimitiveCollec(prim);
                             primitiveResult.add(primitive);
                         }
@@ -158,7 +177,7 @@ public class EntityManager {
                                 sizeCollectionInt++;
                                 break;
                         }
-                    }else{
+                    } else {
                         switch (oper) {
                             case SAVE:
                                 this.collection.push(admin.saveAll(((Collection) value)));
@@ -171,9 +190,12 @@ public class EntityManager {
                         }
                     }
 
-                    if(sizeCollectionInt == 0) this.nameCollection.pop();
+                    if (sizeCollectionInt == 0) {
+                        this.nameCollection.pop();
+                    }
                     admin.setCollectionHasName(false);
                 } else if (!this.ref.checkPrimitivesExtended(value.getClass(), ann)) {
+                    body.setDataType(Properties.TYPES.FOREIGNKEY);
                     if (this.dropDown && !wasNull) {
                         boolean tempCollectionValue = admin.getCollection();
                         admin.setCollection(false);
@@ -200,11 +222,12 @@ public class EntityManager {
                                 break;
                         }
                         admin.setCollection(tempCollectionValue);
-                    }else{
+                    } else {
                         objs[1] = -1;
                         array.add(objs);
                     }
                 } else {
+                    body.setDataType(Properties.TYPES.PRIMITIVE);
                     objs[1] = value;
                     array.add(objs);
                 }
@@ -213,38 +236,47 @@ public class EntityManager {
             } catch (java.lang.reflect.InvocationTargetException ex) {
                 return null;
             }
+            dictionary.addData(body);
         }
-        
-        if(sizeCollectionInt != 0){
+        dictionary.closeDictObject(object.getClass().getName());
+
+        if (sizeCollectionInt != 0) {
             this.sizeCollection.push(sizeCollectionInt);
         }
         this.hasParent = tempParent;
         boolean tempCollec = admin.getCollection();
         admin.setCollection(false);
 
-        if (this.hasParent && ((oper == OPERATION.SAVE) ||
-                (oper == OPERATION.MODIFY))) {
+        if (this.hasParent && ((oper == OPERATION.SAVE)
+                || (oper == OPERATION.MODIFY))) {
             this.hasParent = false;
             int index = this.completeParentData(admin, object, oper);
             array.add(new Object[]{"parent_id", index});
         }
         admin.setCollection(tempCollec);
         array.add(statement);
-        for(int i = this.primaryKey.size()-1; i >= primKeyItems; i--){
+        for (int i = this.primaryKey.size() - 1; i >= primKeyItems; i--) {
             this.primaryKey.removeElementAt(i);
         }
         return array;
     }
 
     public Object result2Object(AdminBase admin, Object object, ResultSet rs) {
-        //ArrayList dictValue = new ArrayList();
+        EntityDictionary dictionary = new EntityDictionary();
+        try {
+            if (dictionary.contains(object.getClass().toString())) {
+                return dictionary.result2Object(admin, this, object, rs);
+            }
+        } catch (DictionaryIncompleteException excep) {
+        }
+
         String table1 = this.readClassName(object);
-        //dictValue.add(table1);
+        dictionary.newDictObject(table1, hasParent, null);
         boolean tempParent = this.hasParent;
         this.hasParent = false;
-        Field fields[] = object.getClass().getDeclaredFields();
+
         boolean searchId = true;
-        if(View.class.isInstance(object)){
+        if (View.class.isInstance(object)) {
             searchId = false;
             this.primaryKeyValue.push(1);
         }
@@ -252,8 +284,11 @@ public class EntityManager {
         this.primaryKey.push("id");
         boolean ignore = false;
 
+        Field fields[] = object.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
+            DictionaryBody body = new DictionaryBody();
             String field = fields[i].getName();
+            body.setFieldName(field);
             String name = field;
             Annotation ann = null;
             Object value = null;
@@ -261,6 +296,9 @@ public class EntityManager {
             Annotation annotations[] = fields[i].getAnnotations();
             try {
                 for (Annotation a : annotations) {
+                    if (a instanceof Validation) {
+                        body.setValidation((Validation) a);
+                    }
                     if (!(a instanceof Column)) {
                         continue;
                     }
@@ -270,12 +308,14 @@ public class EntityManager {
                     }
                     ann = a;
                     if (((Column) a).type() == Properties.TYPES.PRIMARYKEY) {
+                        body.setDataType(Properties.TYPES.PRIMARYKEY);
                         value = rs.getObject(name);
                         this.primaryKeyValue.push((Integer) value);
                         searchId = false;
                     }
                     ignore = ((Column) a).ignore();
                 }
+                body.setColName(name);
 
                 if (searchId) {
                     searchId = false;
@@ -289,7 +329,8 @@ public class EntityManager {
 
                 Method setter = this.ref.obtainSetter(object.getClass(), field);
                 Method getter = this.ref.obtainGetter(object.getClass(), field);
-                //dictValue.add(new Object[]{name, getter, setter});
+                body.setGet(getter);
+                body.setSet(setter);
                 Object get = getter.invoke(object, new Object[0]);
                 //When the object is not initialized
                 if (get == null) {
@@ -297,16 +338,18 @@ public class EntityManager {
                 }
 
                 if (this.ref.implementsCollection(get.getClass(), ann)) {
+                    body.setDataType(Properties.TYPES.COLLECTION);
                     Class clazz2 = this.ref.obtainItemCollectionType(object.getClass(), field);
+                    body.setCollectionClass(clazz2);
                     String table2 = this.ref.readTableName(clazz2);
-                    String fieldName = field.substring(0, 1).toUpperCase() +
-                            field.substring(1);
+                    String fieldName = field.substring(0, 1).toUpperCase()
+                            + field.substring(1);
                     String tempName = table1 + table2 + fieldName;
                     String tempTableName = table2 + table1 + fieldName;
 
                     String forColumn = "base";
-                    if (!admin.checkTableExist(tempName) &&
-                            admin.checkTableExist(tempTableName)) {
+                    if (!admin.checkTableExist(tempName)
+                            && admin.checkTableExist(tempTableName)) {
                         tempName = tempTableName;
                         forColumn = "related";
                     }
@@ -315,25 +358,26 @@ public class EntityManager {
 
                     //Supposed that "id" was readed before
                     ArrayList results;
-                    if(this.ref.checkPrimitivesExtended(clazz2, null)){
+                    if (this.ref.checkPrimitivesExtended(clazz2, null)) {
                         results = admin.obtainAll(PrimitiveCollec.class,
                                 forColumn + "=" + this.primaryKeyValue.peek());
                         int lengthPrimitives = results.size();
-                        for(int q = 0; q < lengthPrimitives; q++){
-                            results.set(q, ((PrimitiveCollec)results.get(q)).getObject());
+                        for (int q = 0; q < lengthPrimitives; q++) {
+                            results.set(q, ((PrimitiveCollec) results.get(q)).getObject());
                         }
-                    }else{
+                    } else {
                         results = admin.obtainAll(M2mTable.class,
                                 forColumn + "=" + this.primaryKeyValue.peek());
                         admin.setCollectionHasName(false);
                         results = this.restoreCollection(admin, results,
-                            object, name, forColumn, tempName);
+                                object, name, forColumn, tempName);
                     }
 
                     Object valueCollection = this.ref.emptyInstance(get.getClass());
                     ((Collection) valueCollection).addAll(results);
                     admin.setCollectionHasName(false);
                     setter.invoke(object, new Object[]{valueCollection});
+                    dictionary.addData(body);
                     continue;
                 } else {
                     value = rs.getObject(name);
@@ -342,6 +386,7 @@ public class EntityManager {
                 //For Foreign Keys
                 boolean isForeign = !this.ref.checkPrimitivesExtended(get.getClass(), ann);
                 if (this.dropDown && isForeign) {
+                    body.setDataType(Properties.TYPES.FOREIGNKEY);
                     Integer index = (Integer) value;
                     String indexName = this.ref.checkIndex(get.getClass());
 
@@ -349,27 +394,32 @@ public class EntityManager {
                         setter.invoke(object, new Object[]{get});
                     }
                 } else if (!isForeign) {
+                    body.setDataType(Properties.TYPES.PRIMITIVE);
                     if (value instanceof Timestamp) {
                         setter.invoke(object, new Object[]{
                                     this.ref.manageTimeData(get.getClass(),
-                                            ((Timestamp) value))});
+                                    ((Timestamp) value))});
                     } else {
                         setter.invoke(object, new Object[]{value});
                     }
+                } else {
+                    body.setDataType(Properties.TYPES.FOREIGNKEY);
                 }
 
             } catch (Exception e) {
                 e.printStackTrace();
                 return null;
             }
+            dictionary.addData(body);
         }
+        dictionary.closeDictObject(object.getClass().getName());
         this.hasParent = tempParent;
 
         if (this.hasParent) {
             this.hasParent = false;
             this.restoreParent(admin, object, rs);
         }
-        for(int i = this.primaryKey.size()-1; i >= primKeyItems; i--){
+        for (int i = this.primaryKey.size() - 1; i >= primKeyItems; i--) {
             this.primaryKey.removeElementAt(i);
             this.primaryKeyValue.removeElementAt(i);
         }
@@ -379,8 +429,8 @@ public class EntityManager {
 
     private void restoreParent(AdminBase admin, Object child, ResultSet rs) {
         Object parent;
-        if ( (this.originalChild.size() == 0) || 
-                (!this.originalChild.peek().getClass().isInstance(child)) ) {
+        if ((this.originalChild.size() == 0)
+                || (!this.originalChild.peek().getClass().isInstance(child))) {
             this.originalChild.push(child);
         }
 
@@ -413,11 +463,11 @@ public class EntityManager {
                     sql = field + "='" + rs.getObject("parent_id") + "'";
                     admin.obtainWhere(parent, sql);
                 }
-                if(primary){
+                if (primary) {
                     primary = false;
                     String indexSon = this.ref.checkIndex(child.getClass());
                     String indexParent = this.ref.checkIndex(parent.getClass());
-                    if(indexSon.equals(indexParent)){
+                    if (indexSon.equals(indexParent)) {
                         continue;
                     }
                 }
@@ -426,7 +476,7 @@ public class EntityManager {
                 Object value = getter.invoke(parent, new Object[0]);
                 Method setter = this.ref.obtainSetter(parent.getClass(), field);
 
-                if ( child.getClass() == this.originalChild.peek().getClass() ) {
+                if (child.getClass() == this.originalChild.peek().getClass()) {
                     setter.invoke(child, new Object[]{value});
                 } else {
                     setter.invoke(this.originalChild.peek(), new Object[]{value});
@@ -435,7 +485,7 @@ public class EntityManager {
         } catch (Exception e) {
             e.printStackTrace();
         } finally {
-            if ( child.getClass() == this.originalChild.peek().getClass() ) {
+            if (child.getClass() == this.originalChild.peek().getClass()) {
                 this.originalChild.pop();
             }
         }
@@ -453,26 +503,28 @@ public class EntityManager {
         for (int i = 0; i < fields.length; i++) {
             Annotation ann[] = fields[i].getAnnotations();
             ColumnDefined colDef;
-            switch(admin.getDB()){
+            switch (admin.getDB()) {
                 case POSTGRES:
-                    colDef = new ColumnDefinedPostgre();break;
+                    colDef = new ColumnDefinedPostgre();
+                    break;
                 default:
-                    colDef = new ColumnDefined();break;
+                    colDef = new ColumnDefined();
+                    break;
             }
             String name = fields[i].getName();
             collectionBool = false;
 
             for (int j = 0; j < ann.length; j++) {
                 if (ann[j] instanceof Column) {
-                    if ((((Column) ann[j]).type() == Properties.TYPES.COLLECTION) ||
-                            ((Column) ann[j]).ignore()) {
+                    if ((((Column) ann[j]).type() == Properties.TYPES.COLLECTION)
+                            || ((Column) ann[j]).ignore()) {
                         collectionBool = true;
                         continue;
                     }
                     if (((Column) ann[j]).name().length() != 0) {
                         name = ((Column) ann[j]).name();
                     }
-                } else if (ann[j] instanceof ColumnDefinition){
+                } else if (ann[j] instanceof ColumnDefinition) {
                     colDef.setType(def.obtainDataType(
                             ((ColumnDefinition) ann[j]).type()));
                     colDef.setLength(((ColumnDefinition) ann[j]).length());
@@ -494,7 +546,7 @@ public class EntityManager {
             if (primary) {
                 array.add(1, colDef);
                 primary = false;
-            } else if(!collectionBool) {
+            } else if (!collectionBool) {
                 array.add(colDef);
             }
         }
@@ -505,8 +557,8 @@ public class EntityManager {
     private int completeParentData(AdminBase admin, Object child, OPERATION oper) {
         Object parent;
         int index = 0;
-        if ( (this.originalChild.size() == 0) ||
-                (!child.getClass().isInstance(this.originalChild.peek())) ) {
+        if ((this.originalChild.size() == 0)
+                || (!child.getClass().isInstance(this.originalChild.peek()))) {
             this.originalChild.push(child);
         }
         try {
@@ -516,15 +568,15 @@ public class EntityManager {
             this.primaryKey.push("id");
             for (int i = 0; i < fields.length; i++) {
                 String field = fields[i].getName();
-                
+
                 Annotation annotations[] = fields[i].getAnnotations();
                 for (Annotation a : annotations) {
                     if (!(a instanceof Column)) {
                         continue;
                     }
 
-                    if ((((Column) a).name().length() != 0) &&
-                            (((Column) a).type() == Properties.TYPES.PRIMARYKEY)) {
+                    if ((((Column) a).name().length() != 0)
+                            && (((Column) a).type() == Properties.TYPES.PRIMARYKEY)) {
                         this.primaryKey.pop();
                         this.primaryKey.push(((Column) a).name());
                     }
@@ -532,7 +584,7 @@ public class EntityManager {
 
                 Method getter = this.ref.obtainGetter(parent.getClass(), field);
                 Object value;
-                if ( child.getClass() == this.originalChild.peek().getClass() ) {
+                if (child.getClass() == this.originalChild.peek().getClass()) {
                     value = getter.invoke(child, new Object[0]);
                 } else {
                     value = getter.invoke(this.originalChild.peek(), new Object[0]);
@@ -554,7 +606,7 @@ public class EntityManager {
         } catch (Exception e) {
             return -1;
         } finally {
-            if ( child.getClass() == this.originalChild.peek().getClass() ) {
+            if (child.getClass() == this.originalChild.peek().getClass()) {
                 this.originalChild.pop();
             }
             this.primaryKey.pop();
@@ -568,23 +620,23 @@ public class EntityManager {
         Annotation entity[] = object.getClass().getAnnotations();
         String entityName = object.getClass().getSimpleName();
         for (int i = 0; i < entity.length; i++) {
-            if (entity[i] instanceof Table &&
-                    ((Table) entity[i]).value().length() != 0) {
+            if (entity[i] instanceof Table
+                    && ((Table) entity[i]).value().length() != 0) {
                 entityName = ((Table) entity[i]).value();
             } else if (entity[i] instanceof Parent) {
                 this.hasParent = true;
             }
         }
-        if (entity.length == 0 &&
-                object.getClass().getSuperclass().getPackage() ==
-                object.getClass().getPackage()) {
+        if (entity.length == 0
+                && object.getClass().getSuperclass().getPackage()
+                == object.getClass().getPackage()) {
             this.hasParent = true;
         }
 
         return entityName;
     }
 
-    private ArrayList restoreCollection(AdminBase admin, ArrayList items,
+    ArrayList restoreCollection(AdminBase admin, ArrayList items,
             Object object, String field, String forColumn, String table) {
         ArrayList results = new ArrayList();
         //obtain object type from array
@@ -593,11 +645,11 @@ public class EntityManager {
         //Results size (elements related to this object)
         int size = items.size();
         for (int q = 0; q < size; q++) {
-            if (!this.manyRestore.contains(table + "-" + ((M2mTable) items.get(q)).getBase() +
-                    "-" + ((M2mTable) items.get(q)).getRelated())) {
+            if (!this.manyRestore.contains(table + "-" + ((M2mTable) items.get(q)).getBase()
+                    + "-" + ((M2mTable) items.get(q)).getRelated())) {
                 //Add this object to the ArrayList to avoid repetition
-                this.manyRestore.add(table + "-" + ((M2mTable) items.get(q)).getBase() +
-                        "-" + ((M2mTable) items.get(q)).getRelated());
+                this.manyRestore.add(table + "-" + ((M2mTable) items.get(q)).getBase()
+                        + "-" + ((M2mTable) items.get(q)).getRelated());
 
                 Object objC = this.ref.emptyInstance(objCollec.getName());
                 int index = ((M2mTable) items.get(q)).getRelated();
@@ -611,9 +663,9 @@ public class EntityManager {
             }
         }
 
-        if ((size > 0) && (this.manyRestore.indexOf(table + "-" +
-                ((M2mTable) items.get(0)).getBase() +
-                "-" + ((M2mTable) items.get(0)).getRelated()) == 0)) {
+        if ((size > 0) && (this.manyRestore.indexOf(table + "-"
+                + ((M2mTable) items.get(0)).getBase()
+                + "-" + ((M2mTable) items.get(0)).getRelated()) == 0)) {
             this.manyRestore.clear();
         }
 
@@ -630,8 +682,8 @@ public class EntityManager {
                 Annotation annotations[] = f.getAnnotations();
                 if (annotations.length > 0) {
                     for (Annotation a : annotations) {
-                        if ((a instanceof Column) &&
-                                ((Column) ann).name().length() != 0) {
+                        if ((a instanceof Column)
+                                && ((Column) ann).name().length() != 0) {
                             foreign = ((Column) ann).name();
                             ann = a;
                         }
@@ -651,9 +703,9 @@ public class EntityManager {
                         String idName2 = this.ref.checkIndex(type.getClass());
                         Method getIdValue = this.ref.obtainGetter(obj.getClass(), idName1);
                         int val = (Integer) getIdValue.invoke(obj, new Object[0]);
-                        String sql = "SELECT * FROM " + table1 + ", " + table2 +
-                                " WHERE " + table1 + "." + idName1 + " = " + String.valueOf(val) +
-                                " AND " + table2 + "." + idName2 + " = " + table1 + "." + foreign;
+                        String sql = "SELECT * FROM " + table1 + ", " + table2
+                                + " WHERE " + table1 + "." + idName1 + " = " + String.valueOf(val)
+                                + " AND " + table2 + "." + idName2 + " = " + table1 + "." + foreign;
                         admin.obtainSelect(type, sql);
                         value = type;
                     } else {
@@ -695,13 +747,13 @@ public class EntityManager {
                 }
                 if (this.ref.implementsCollection(value.getClass(), ann)) {
                     String col[] = new String[2];
-                    if(tableRelated.length() == 0){
+                    if (tableRelated.length() == 0) {
                         tableRelated = this.ref.readTableName(
                                 this.ref.obtainItemCollectionType(
                                 obj.getClass(), f.getName()));
                         col[0] = tableBase + tableRelated;
                         col[1] = tableRelated + tableBase;
-                    }else{
+                    } else {
                         col[0] = tableRelated;
                         col[1] = tableRelated;
                     }
@@ -731,8 +783,8 @@ public class EntityManager {
 
                 Object array[] = ((Collection) obj).toArray();
                 if (array.length > 0) {
-                    String fieldName = s.substring(0, 1).toUpperCase() +
-                            s.substring(1);
+                    String fieldName = s.substring(0, 1).toUpperCase()
+                            + s.substring(1);
                     String table1 = this.ref.readTableName(object.getClass());
                     String table2 = this.ref.readTableName(array[0].getClass());
                     String relation = table1 + table2 + fieldName;
@@ -769,10 +821,10 @@ public class EntityManager {
         }
     }
 
-    public boolean deleteParent(AdminBase admin, Object object) throws Exception{
+    public boolean deleteParent(AdminBase admin, Object object) throws Exception {
         boolean value = false;
         //Complete Parent Data
-        if(this.ref.hasParent(object.getClass())){
+        if (this.ref.hasParent(object.getClass())) {
             int index = this.completeParentData(admin, object,
                     EntityManager.OPERATION.DELETE);
             Object parent = this.ref.emptyInstance(

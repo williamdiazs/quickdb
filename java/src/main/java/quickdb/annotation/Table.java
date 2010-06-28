@@ -11,5 +11,9 @@ import java.lang.annotation.*;
 public @interface Table{
 
     String value() default "";
+    boolean cache() default false;
+    boolean cacheUpdate() default false;
+    String[] before() default "";
+    String[] after() default "";
 
 }
