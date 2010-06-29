@@ -53,8 +53,7 @@ public class AdminSQLite extends AdminBase {
             insert.append(")");
             values.append(")");
 
-            index = this.conex.insertRow(insert.toString() + " " + values.toString(), 
-                    String.valueOf(((Object[]) array.get(1))[0]));
+            index = this.conex.insertRow(insert.toString() + " " + values.toString());
 
             if (this.getCollection()) {
                 this.saveMany2Many(((String) array.get(0)), true, index);
@@ -110,8 +109,7 @@ public class AdminSQLite extends AdminBase {
             }
             update.append(" WHERE " + String.valueOf(array.get(array.size() - 1)));
             
-            this.conex.insertRow(update.toString(),
-                    String.valueOf(((Object[]) array.get(1))[0]));
+            this.conex.insertRow(update.toString());
             int index = Integer.parseInt(String.valueOf(array.get(array.size() - 1)).
                     substring(String.valueOf(array.get(array.size() - 1)).indexOf("=")+1));
 

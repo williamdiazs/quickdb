@@ -112,7 +112,7 @@ public class ConnectionDB {
         }
     }
 
-    public int insertRow(String query, String id) throws SQLException {
+    public int insertRow(String query) throws SQLException {
         int index = 0;
         try {
             statement = connection.createStatement();
