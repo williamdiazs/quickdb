@@ -151,33 +151,6 @@ public class ConnectionDB {
         return index;
     }
 
-    public boolean exist(String tableName, String columnName,
-            Object fieldName) {
-        try {
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            rs = statement.executeQuery("SELECT " + columnName + " FROM " +
-                    tableName + ";");
-            rs.next();
-            do {
-                if (rs.getObject(1).equals(fieldName)) {
-                    tryAgain = true;
-                    return true;
-                }
-            } while (rs.next());
-        } catch (SQLException e) {
-            if (tryAgain) {
-                this.connect();
-                tryAgain = false;
-                return this.exist(tableName, columnName, fieldName);
-            } else {
-                System.err.println("'exist()'. " +
-                        e.getMessage());
-            }
-        }
-        return false;
-    }
-
     public boolean existTable(String tableName) {
         try {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -188,44 +161,6 @@ public class ConnectionDB {
             //System.err.println(e.getMessage());
         }
         return false;
-    }
-
-    public ResultSet find(String sql) {
-
-        try {
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_READ_ONLY);
-            rs = statement.executeQuery(sql + ";");
-            tryAgain = true;
-        } catch (SQLException e) {
-            if (tryAgain) {
-                this.connect();
-                tryAgain = false;
-                return this.find(sql);
-            } else {
-                System.err.println("'find()' Error. " +
-                        e.getMessage());
-            }
-        }
-        return rs;
-    }
-
-    public ResultSet updateFieldList(String sql) {
-        try {
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            rs = statement.executeQuery(sql + ";");
-            tryAgain = true;
-        } catch (SQLException e) {
-            if (tryAgain) {
-                this.connect();
-                tryAgain = false;
-                return this.updateFieldList(sql);
-            } else {
-                System.err.println("Error trying to update table. " + e.getMessage());
-            }
-        }
-        return rs;
     }
 
     public ResultSet updateField(String table, String where) {
@@ -244,23 +179,6 @@ public class ConnectionDB {
             }
         }
         return rs;
-    }
-
-    public void deleteField(String tableName, String columnKey,
-            Object fieldName) {
-        try {
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            rs = statement.executeQuery("SELECT " + columnKey + " FROM " +
-                    tableName + ";");
-            while (rs.next()) {
-                if (rs.getObject(1).toString().equals(fieldName.toString())) {
-                    rs.deleteRow();
-                }
-            }
-        } catch (SQLException e) {
-            System.err.println("'deleteField()'. " + e.getMessage());
-        }
     }
 
     public ResultSet select(String select) {
@@ -295,26 +213,6 @@ public class ConnectionDB {
                 return this.selectWhere(table, where);
             } else {
                 System.err.println("'SelectWhere()'. " +
-                        e.getMessage());
-            }
-        }
-        return null;
-    }
-
-    public ResultSet selectUpdate(String select) {
-        try {
-            statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
-                    ResultSet.CONCUR_UPDATABLE);
-            rs = statement.executeQuery(select + ";");
-            tryAgain = true;
-            return rs;
-        } catch (SQLException e) {
-            if (tryAgain) {
-                this.connect();
-                tryAgain = false;
-                return this.selectUpdate(select);
-            } else {
-                System.err.println("'Select()'. " +
                         e.getMessage());
             }
         }
