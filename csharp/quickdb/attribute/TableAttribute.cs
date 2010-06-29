@@ -7,6 +7,10 @@ namespace cat.quickdb.attribute
 	public class TableAttribute : Attribute
 	{
 		private string name;
+		private bool cache;
+		private bool cacheUpdate;
+		private string[] before;
+		private string[] after;
 		
 		public TableAttribute(){}
 		

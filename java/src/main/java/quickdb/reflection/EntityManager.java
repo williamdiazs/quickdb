@@ -16,8 +16,10 @@ import quickdb.util.Validations;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.Hashtable;
 import java.util.Stack;
 import quickdb.exception.DictionaryIncompleteException;
+import quickdb.modelSupport.CacheManager;
 
 /**
  *
@@ -39,6 +41,7 @@ public class EntityManager {
     boolean hasParent;
     boolean dropDown;
     private ArrayList<String> manyRestore;
+    private Hashtable<String, CacheManager> cacheStore;
     private ReflectionUtilities ref;
     private Table action;
 
@@ -55,6 +58,7 @@ public class EntityManager {
         this.hasParent = false;
         this.manyRestore = new ArrayList<String>();
         this.action = null;
+        this.cacheStore = new Hashtable<String, CacheManager>();
     }
 
     /**
@@ -639,7 +643,7 @@ public class EntityManager {
             }
         }
         if (entity.length == 0){
-            this.executeAfter.push(new String[0]);
+            this.executeAfter.push(new String[]{""});
             if(object.getClass().getSuperclass().getPackage()
                 == object.getClass().getPackage()) {
                 this.hasParent = true;
@@ -647,6 +651,80 @@ public class EntityManager {
         }
 
         return entityName;
+    }
+
+    public boolean isCacheable(Class clazz){
+        Annotation entity[] = clazz.getAnnotations();
+        for (int i = 0; i < entity.length; i++) {
+            if (entity[i] instanceof Table){
+                return ((Table)entity[i]).cache() || ((Table)entity[i]).cacheUpdate();
+            }
+        }
+        return false;
+    }
+
+    public ArrayList obtainCache(String sql, AdminBase admin, Class clazz){
+        if(this.cacheStore.containsKey(clazz.getName() + sql)){
+            CacheManager cache = this.cacheStore.get(clazz.getName() + sql);
+            switch(cache.getCacheType()){
+                case 0:
+                    return cache.getData();
+                case 1:
+                    CacheManager cacheUpdate = new CacheManager();
+                    admin.setCollectionHasName(true);
+                    this.nameCollection.push(cache.getTableName());
+                    admin.obtainWhere(cacheUpdate, "id > 0");
+                    admin.setCollectionHasName(false);
+                    if(cacheUpdate.getId() == cache.getId()){
+                        return cache.getData();
+                    }
+                    this.cacheStore.remove(clazz.getName() + sql);
+                    return admin.obtainAll(clazz, sql);
+            }
+        }
+
+        return null;
+    }
+
+    public void makeCacheable(String sql, ArrayList array, Class clazz, AdminBase admin){
+        CacheManager cache = new CacheManager(array);
+        Annotation entity[] = clazz.getAnnotations();
+        for (int i = 0; i < entity.length; i++) {
+            if (entity[i] instanceof Table){
+                if(((Table)entity[i]).cache()){
+                    cache.setCacheType(0);
+                }else if(((Table)entity[i]).cacheUpdate()){
+                    cache.setCacheType(1);
+                    cache.setTableName(clazz.getSimpleName() + "CacheUpdate");
+                    admin.setCollectionHasName(true);
+                    this.nameCollection.push(cache.getTableName());
+                    admin.obtainWhere(cache, "id > 0");
+                    admin.setCollectionHasName(false);
+                }
+                break;
+            }
+        }
+        this.cacheStore.put(clazz.getName() + sql, cache);
+    }
+
+    public void updateCache(Class clazz, AdminBase admin){
+        Annotation entity[] = clazz.getAnnotations();
+        for (int i = 0; i < entity.length; i++) {
+            if (entity[i] instanceof Table){
+                if(((Table)entity[i]).cacheUpdate()){
+                    String tableName = clazz.getSimpleName() + "CacheUpdate";
+                    CacheManager cacheUpdate = new CacheManager();
+                    if(admin.checkTableExist(tableName)){
+                        admin.executeQuery("DELETE FROM " + tableName);
+                    }
+                    admin.setForceTable(true);
+                    admin.setTableForcedName(tableName);
+                    admin.save(cacheUpdate);
+                    admin.setForceTable(false);
+                }
+                break;
+            }
+        }
     }
 
     ArrayList restoreCollection(AdminBase admin, ArrayList items,
@@ -876,5 +954,9 @@ public class EntityManager {
         this.nameCollection.clear();
         this.primaryKey.clear();
         this.primaryKeyValue.clear();
+    }
+
+    public void cleanCache(){
+        this.cacheStore = new Hashtable<String, CacheManager>();
     }
 }
