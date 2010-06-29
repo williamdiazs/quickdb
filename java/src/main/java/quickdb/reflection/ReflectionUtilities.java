@@ -355,4 +355,28 @@ public class ReflectionUtilities {
 
         return value;
     }
+
+    public void executeAction(String action[], Object object){
+        if(!action[0].equalsIgnoreCase("")){
+            Object master = object;
+            if(action.length > 1){
+                if(action[1].contains(".")){
+                    master = this.emptyInstance(action[1]);
+                }else{
+                    String packageName = object.getClass().getPackage().getName();
+                    master = this.emptyInstance(packageName + "." + action[1]);
+                }
+
+                try{
+                    Method method = master.getClass().getMethod(action[0]);
+                    if(action.length > 2 && action[2].equalsIgnoreCase("this")){
+                        method.invoke(master, new Object[]{object});
+                    }else{
+                        method.invoke(master, new Object[0]);
+                    }
+                }catch(Exception e){}
+            }
+        }
+    }
+
 }
