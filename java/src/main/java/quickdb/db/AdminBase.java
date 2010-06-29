@@ -1,5 +1,6 @@
 package quickdb.db;
 
+import java.security.InvalidParameterException;
 import quickdb.db.connection.ConnectionDB;
 import quickdb.db.dbms.DbmsInterpreter;
 import quickdb.db.dbms.mysql.ColumnDefined;
@@ -12,6 +13,7 @@ import java.sql.ResultSet;
 import java.util.Collection;
 import java.util.ArrayList;
 import java.sql.SQLException;
+import java.util.Hashtable;
 import java.util.Stack;
 import quickdb.reflection.EntityManager;
 
@@ -569,26 +571,56 @@ public class AdminBase {
      * @param Number of Columns involved [int]
      * @return Object[] or null
      */
-    public Object[] obtainTable(String sql, int cols) {
-        ArrayList<String[]> array = new ArrayList<String[]>();
-
+    public Object[] obtainTable(Object... prop) {
         try {
-            this.rs = conex.select(sql);
+            this.rs = conex.select((String)prop[0]);
             rs.next();
-
-            do {
-                String[] objs = new String[cols];
-                for (int i = 1; i < cols + 1; i++) {
-                    objs[i - 1] = rs.getObject(i).toString();
+            int cols = 0;
+            String[] names = new String[0];
+            boolean hash = false;
+            if(prop.length > 1 && prop[1].getClass().getSimpleName().equalsIgnoreCase("Integer")){
+                cols = (Integer) prop[1];
+            }else if(prop.length > 1 && prop[1].getClass().getSimpleName().equalsIgnoreCase("Boolean")){
+                if((Boolean)prop[1]){
+                    String sql = ((String) prop[0]).toLowerCase();
+                    names = sql.substring(
+                            sql.indexOf("select ")+7, sql.indexOf(" from")).split(",");
+                    cols = names.length;
+                    hash = true;
+                }else{
+                    String sql = ((String) prop[0]).toLowerCase();
+                    cols = sql.substring(
+                            sql.indexOf("select ")+7, sql.indexOf(" from")).split(",").length;
                 }
-                array.add(objs);
-            } while (rs.next());
+            }else{
+                throw new InvalidParameterException();
+            }
+
+            if(hash){
+                ArrayList<Hashtable<String, Object>> array = new ArrayList<Hashtable<String, Object>>();
+                do {
+                    Hashtable<String, Object> table = new Hashtable<String, Object>(cols);
+                    for (int i = 1; i < cols + 1; i++) {
+                        table.put(names[i-1].trim(), rs.getObject(i));
+                    }
+                    array.add(table);
+                } while (rs.next());
+                return array.toArray();
+            }else{
+                ArrayList<String[]> array = new ArrayList<String[]>();
+                do {
+                    String[] objs = new String[cols];
+                    for (int i = 1; i < cols + 1; i++) {
+                        objs[i - 1] = rs.getObject(i).toString();
+                    }
+                    array.add(objs);
+                } while (rs.next());
+                return array.toArray();
+            }
 
         } catch (Exception e) {
             return null;
         }
-
-        return array.toArray();
     }
 
     @Deprecated
