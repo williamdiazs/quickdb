@@ -156,6 +156,7 @@ public class AdminBase {
             if (this.collection) {
                 this.saveMany2Many(((String) array.get(0)), true, index);
             }
+            this.manager.updateCache(object.getClass(), this);
         } catch (SQLException ex) {
             int value = -1;
             try{
@@ -341,7 +342,7 @@ public class AdminBase {
             if (this.collection) {
                 this.saveMany2Many(((String) array.get(0)), false, index);
             }
-
+            this.manager.updateCache(object.getClass(), this);
         } catch (Exception e) {
             try {
                 conex.cancelTransaction();
@@ -458,6 +459,13 @@ public class AdminBase {
      * @return ArrayList [Collection of Object]
      */
     public ArrayList obtainAll(Class clazz, String sql) {
+        boolean cacheable = this.manager.isCacheable(clazz);
+        if(cacheable){
+            ArrayList array = this.manager.obtainCache(sql, this, clazz);
+            if(array != null){
+                return array;
+            }
+        }
         this.startObtainAll = true;
         ArrayList results = new ArrayList();
         try {
@@ -476,6 +484,9 @@ public class AdminBase {
                     results.add(obj);
                     obj = this.manager.getRef().emptyInstance(object);
                 }
+            }
+            if(cacheable){
+                this.manager.makeCacheable(sql, results, clazz, this);
             }
         } catch (Exception e) {
             return null;
@@ -808,6 +819,14 @@ public class AdminBase {
 
     public void close(){
         this.conex.closeConnection();
+    }
+
+    public void setForceTable(boolean forceTable) {
+        this.forceTable = forceTable;
+    }
+
+    public void setTableForcedName(String tableForcedName) {
+        this.tableForcedName = tableForcedName;
     }
     
 }
