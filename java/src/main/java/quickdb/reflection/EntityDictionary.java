@@ -1,11 +1,11 @@
 package quickdb.reflection;
 
-import java.lang.annotation.Annotation;
 import java.sql.ResultSet;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Hashtable;
+import quickdb.annotation.Table;
 import quickdb.db.AdminBase;
 import quickdb.db.View;
 import quickdb.exception.DictionaryIncompleteException;
@@ -27,7 +27,7 @@ public class EntityDictionary {
         return EntityDictionary.dict.containsKey(key);
     }
 
-    public void newDictObject(String table, boolean hasParent, Annotation action){
+    public void newDictObject(String table, boolean hasParent, Table action){
         this.dictObject = new DictionaryData(table, hasParent, action);
     }
 
@@ -388,10 +388,10 @@ class DictionaryData{
 
     private String tableName;
     private boolean hasParent;
-    private Annotation action;
+    private Table action;
     private ArrayList<DictionaryBody> data;
 
-    public DictionaryData(String tableName, boolean hasParent, Annotation action) {
+    public DictionaryData(String tableName, boolean hasParent, Table action) {
         this.tableName = tableName;
         this.hasParent = hasParent;
         this.action = action;
@@ -402,7 +402,7 @@ class DictionaryData{
         this.data.add(bodyData);
     }
 
-    public Annotation getAction() {
+    public Table getAction() {
         return action;
     }
 

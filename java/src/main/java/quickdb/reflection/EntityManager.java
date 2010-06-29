@@ -35,10 +35,12 @@ public class EntityManager {
     Stack<Integer> sizeCollection;
     Stack<String> nameCollection;
     Stack<Object> originalChild;
+    Stack<String[]> executeAfter;
     boolean hasParent;
     boolean dropDown;
     private ArrayList<String> manyRestore;
     private ReflectionUtilities ref;
+    private Table action;
 
     public EntityManager() {
         this.ref = new ReflectionUtilities();
@@ -49,8 +51,10 @@ public class EntityManager {
         this.nameCollection = new Stack<String>();
         this.primaryKeyValue = new Stack<Integer>();
         this.originalChild = new Stack<Object>();
+        this.executeAfter = new Stack<String[]>();
         this.hasParent = false;
         this.manyRestore = new ArrayList<String>();
+        this.action = null;
     }
 
     /**
@@ -78,7 +82,8 @@ public class EntityManager {
         String statement = "";
 
         String tableName = this.readClassName(object);
-        dictionary.newDictObject(tableName, hasParent, null);
+        dictionary.newDictObject(tableName, hasParent, this.action);
+        this.action = null;
         array.add(tableName);
         boolean tempParent = this.hasParent;
         this.hasParent = false;
@@ -258,6 +263,8 @@ public class EntityManager {
         for (int i = this.primaryKey.size() - 1; i >= primKeyItems; i--) {
             this.primaryKey.removeElementAt(i);
         }
+
+        this.ref.executeAction(this.executeAfter.pop(), object);
         return array;
     }
 
@@ -620,17 +627,23 @@ public class EntityManager {
         Annotation entity[] = object.getClass().getAnnotations();
         String entityName = object.getClass().getSimpleName();
         for (int i = 0; i < entity.length; i++) {
-            if (entity[i] instanceof Table
-                    && ((Table) entity[i]).value().length() != 0) {
-                entityName = ((Table) entity[i]).value();
+            if (entity[i] instanceof Table){
+                if(((Table) entity[i]).value().length() != 0) {
+                    entityName = ((Table) entity[i]).value();
+                }
+                this.ref.executeAction(((Table) entity[i]).before(), object);
+                this.executeAfter.push(((Table) entity[i]).after());
+                this.action = ((Table) entity[i]);
             } else if (entity[i] instanceof Parent) {
                 this.hasParent = true;
             }
         }
-        if (entity.length == 0
-                && object.getClass().getSuperclass().getPackage()
+        if (entity.length == 0){
+            this.executeAfter.push(new String[0]);
+            if(object.getClass().getSuperclass().getPackage()
                 == object.getClass().getPackage()) {
-            this.hasParent = true;
+                this.hasParent = true;
+            }
         }
 
         return entityName;
