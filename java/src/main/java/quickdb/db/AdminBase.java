@@ -860,5 +860,14 @@ public class AdminBase {
     public void setTableForcedName(String tableForcedName) {
         this.tableForcedName = tableForcedName;
     }
+
+    public void activateLogging(boolean value){
+        this.close();
+        if(value){
+            this.conex = DbmsInterpreter.connectLogging(db, DbmsInterpreter.properties);
+        }else{
+            this.conex = DbmsInterpreter.connect(db, DbmsInterpreter.properties);
+        }
+    }
     
 }
