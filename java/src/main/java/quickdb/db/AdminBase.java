@@ -15,6 +15,7 @@ import java.util.ArrayList;
 import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Stack;
+import quickdb.db.connection.IConnectionDB;
 import quickdb.reflection.EntityManager;
 
 /**
@@ -23,7 +24,7 @@ import quickdb.reflection.EntityManager;
  */
 public class AdminBase {
 
-    protected ConnectionDB conex;
+    protected IConnectionDB conex;
     protected ResultSet rs;
     protected EntityManager manager;
     protected String tableForcedName;
@@ -841,7 +842,7 @@ public class AdminBase {
         this.collectionHasName = collectionHasName;
     }
 
-    public ConnectionDB getConex() {
+    public IConnectionDB getConex() {
         return this.conex;
     }
 
@@ -861,10 +862,11 @@ public class AdminBase {
         this.tableForcedName = tableForcedName;
     }
 
-    public void activateLogging(boolean value){
+    public void activateLogging(Object... values){
         this.close();
-        if(value){
-            this.conex = DbmsInterpreter.connectLogging(db, DbmsInterpreter.properties);
+        if((Boolean) values[0]){
+            if(values.length < 2) throw new InvalidParameterException();
+            this.conex = DbmsInterpreter.connectLogging(db, ((String) values[1]), DbmsInterpreter.properties);
         }else{
             this.conex = DbmsInterpreter.connect(db, DbmsInterpreter.properties);
         }
