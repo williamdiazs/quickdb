@@ -49,9 +49,10 @@ public class DbmsInterpreter {
         return conex;
     }
 
-    public static ConnectionDB connectLogging(AdminBase.DATABASE db, String... args){
+    public static IConnectionDB connectLogging(AdminBase.DATABASE db, String path, String... args){
         DbmsInterpreter.properties = args;
         IConnectionDB conex = null;
+        ProxyConnectionDB.configureLogger(path);
         switch (db) {
             case MYSQL:
                 conex = (IConnectionDB) ProxyConnectionDB.newInstance(new ConnectionDB(args));
@@ -75,7 +76,7 @@ public class DbmsInterpreter {
                 break;
         }
 
-        return (ConnectionDB) conex;
+        return conex;
     }
 
     public static boolean createTable(AdminBase.DATABASE db, AdminBase admin, Object entity,
