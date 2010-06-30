@@ -6,7 +6,7 @@ import java.sql.*;
  *
  * @author Diego Sarmentero
  */
-public class ConnectionDB {
+public class ConnectionDB implements IConnectionDB{
 
     protected Connection connection = null;
     protected Statement statement = null;
@@ -44,18 +44,21 @@ public class ConnectionDB {
         }
     }
 
+    @Override
     public void connectMySQL() {
         this.driver = "com.mysql.jdbc.Driver";
         this.url = "jdbc:mysql://" + host + ":" + port + "/" + nameDB;
         this.connect();
     }
 
+    @Override
     public void connectPostgres() {
         this.driver = "org.postgresql.Driver";
         this.url = "jdbc:postgresql://" + host + ":" + port + "/" + nameDB;
         this.connect();
     }
 
+    @Override
     public void connectSQLServer() {
         this.driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
         this.url = "jdbc:microsoft:sqlserver://" + host + ":" + port + ";" +
@@ -63,18 +66,21 @@ public class ConnectionDB {
         this.connect();
     }
 
+    @Override
     public void connectSQLite() {
         this.driver = "org.sqlite.JDBC";
         this.url = "jdbc:sqlite:" + nameDB + ".db";
         this.connect();
     }
 
+    @Override
     public void connectFirebird() {
         this.driver = "org.firebirdsql.jdbc.FBDriver";
         this.url = "jdbc:firebirdsql:" + host + "/" + port + ":" + nameDB;
         this.connect();
     }
 
+    @Override
     public void closeConnection() {
         try {
             connection.close();
@@ -85,6 +91,7 @@ public class ConnectionDB {
         }
     }
 
+    @Override
     public void openBlock(String tableName) {
         try {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -101,6 +108,7 @@ public class ConnectionDB {
         }
     }
 
+    @Override
     public void insertField(String columnName, Object columnValue) throws SQLException {
         try {
             rs.updateObject(columnName, columnValue);
@@ -112,6 +120,7 @@ public class ConnectionDB {
         }
     }
 
+    @Override
     public int insertRow(String query) throws SQLException {
         int index = 0;
         try {
@@ -131,6 +140,7 @@ public class ConnectionDB {
         return index;
     }
 
+    @Override
     public int closeBlock() throws java.lang.Exception {
         int index = 0;
         try {
@@ -151,6 +161,7 @@ public class ConnectionDB {
         return index;
     }
 
+    @Override
     public boolean existTable(String tableName) {
         try {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -163,6 +174,7 @@ public class ConnectionDB {
         return false;
     }
 
+    @Override
     public ResultSet updateField(String table, String where) {
         try {
             statement = connection.createStatement(ResultSet.TYPE_SCROLL_SENSITIVE,
@@ -181,6 +193,7 @@ public class ConnectionDB {
         return rs;
     }
 
+    @Override
     public ResultSet select(String select) {
         try {
             statement = connection.createStatement();
@@ -200,6 +213,7 @@ public class ConnectionDB {
         return null;
     }
 
+    @Override
     public ResultSet selectWhere(String table, String where) {
         try {
             statement = connection.createStatement();
@@ -219,26 +233,32 @@ public class ConnectionDB {
         return null;
     }
 
+    @Override
     public Connection getConnection() {
         return this.connection;
     }
 
+    @Override
     public ResultSet getRs() {
         return this.rs;
     }
 
+    @Override
     public void initTransaction() throws SQLException {
         connection.setAutoCommit(false);
     }
 
+    @Override
     public void cancelTransaction() throws SQLException {
         connection.rollback();
     }
 
+    @Override
     public void confirmTransaction() throws SQLException {
         connection.commit();
     }
 
+    @Override
     public void executeQuery(String sql) throws SQLException {
         try {
             statement = connection.createStatement();
@@ -258,6 +278,7 @@ public class ConnectionDB {
         }
     }
 
+    @Override
     public void disconnect() {
         try {
             connection.close();
@@ -266,6 +287,7 @@ public class ConnectionDB {
         }
     }
 
+    @Override
     public void deleteRows(String tableName, String where) throws Exception {
         // Creamos una statement SQL
         statement = connection.createStatement();
@@ -276,6 +298,7 @@ public class ConnectionDB {
         statement.close();
     }
 
+    @Override
     public String getSchema(){
         return this.schema;
     }

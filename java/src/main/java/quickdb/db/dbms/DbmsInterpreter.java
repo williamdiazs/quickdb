@@ -4,6 +4,8 @@ import quickdb.db.AdminBase;
 import quickdb.db.connection.ConnectionDB;
 import quickdb.db.connection.ConnectionDBFirebird;
 import quickdb.db.connection.ConnectionDBPostgre;
+import quickdb.db.connection.IConnectionDB;
+import quickdb.db.connection.ProxyConnectionDB;
 import quickdb.db.dbms.firebird.Firebird;
 import quickdb.db.dbms.mysql.MySQL;
 import quickdb.db.dbms.postgre.PostgreSQL;
@@ -16,7 +18,10 @@ import quickdb.reflection.EntityManager;
  */
 public class DbmsInterpreter {
 
+    public static String[] properties;
+
     public static ConnectionDB connect(AdminBase.DATABASE db, String... args){
+        DbmsInterpreter.properties = args;
         ConnectionDB conex = null;
         switch (db) {
             case MYSQL:
@@ -42,6 +47,35 @@ public class DbmsInterpreter {
         }
 
         return conex;
+    }
+
+    public static ConnectionDB connectLogging(AdminBase.DATABASE db, String... args){
+        DbmsInterpreter.properties = args;
+        IConnectionDB conex = null;
+        switch (db) {
+            case MYSQL:
+                conex = (IConnectionDB) ProxyConnectionDB.newInstance(new ConnectionDB(args));
+                conex.connectMySQL();
+                break;
+            case SQLSERVER:
+                conex = (IConnectionDB) ProxyConnectionDB.newInstance(new ConnectionDB(args));
+                conex.connectSQLServer();
+                break;
+            case POSTGRES:
+                conex = (IConnectionDB) ProxyConnectionDB.newInstance(new ConnectionDBPostgre(args));
+                conex.connectPostgres();
+                break;
+            case SQLite:
+                conex = (IConnectionDB) ProxyConnectionDB.newInstance(new ConnectionDB("", "", args[0], "", ""));
+                conex.connectSQLite();
+                break;
+            case FIREBIRD:
+                conex = (IConnectionDB) ProxyConnectionDB.newInstance(new ConnectionDBFirebird(args));
+                conex.connectFirebird();
+                break;
+        }
+
+        return (ConnectionDB) conex;
     }
 
     public static boolean createTable(AdminBase.DATABASE db, AdminBase admin, Object entity,
