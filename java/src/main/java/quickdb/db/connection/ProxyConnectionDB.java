@@ -51,16 +51,20 @@ public class ProxyConnectionDB implements InvocationHandler {
             throws Throwable {
         Object result;
         try {
-            logger.log(Level.FINE, "execute: " + m.getName());
+            if(m.getName().equalsIgnoreCase("openBlock")){
+                logger.log(Level.FINE, "execute: " + m.getName() +
+                        ", for: " + args[0].toString());
+            }else if(m.getName().equalsIgnoreCase("insertField")){
+                logger.log(Level.FINE, "execute: " + m.getName() +
+                        ", Column: " + args[0].toString() + " - " +
+                        "Value: " + args[1].toString());
+            }else{
+                logger.log(Level.FINE, "execute: " + m.getName());
+            }
             result = m.invoke(obj, args);
         } catch (InvocationTargetException e) {
             if(args == null){
-                if(m.getName().equalsIgnoreCase("openBlock")){
-                    logger.log(Level.SEVERE, "could not execute: " + m.getName() +
-                            ", for: " + args[0].toString());
-                }else{
-                    logger.log(Level.SEVERE, "could not execute: " + m.getName());
-                }
+                logger.log(Level.SEVERE, "could not execute: " + m.getName());
             }else if(args.length == 1){
                 logger.log(Level.SEVERE, args[0].toString());
             }else if(args.length == 2){
