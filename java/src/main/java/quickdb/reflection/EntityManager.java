@@ -121,6 +121,12 @@ public class EntityManager {
                         body.setDataType(Properties.TYPES.PRIMARYKEY);
                         continue;
                     }
+                    if(((Column)a).summary().length() != 0){
+                        body.setDataType(Properties.TYPES.PRIMITIVE);
+                        Method setter = this.ref.obtainSetter(object.getClass(), field);
+                        body.setSet(setter);
+                        ignore = true;
+                    }
                 } else if (a instanceof Validation) {
                     body.setValidation((Validation) a);
                     if (!Validations.isValidField(object, fields[i].getName(), ((Validation)a), ref)) {
@@ -325,6 +331,15 @@ public class EntityManager {
                         searchId = false;
                     }
                     ignore = ((Column) a).ignore();
+                    if(((Column)a).summary().length() != 0){
+                        body.setDataType(Properties.TYPES.PRIMITIVE);
+                        body.setSummary(true);
+                        Method setter = this.ref.obtainSetter(object.getClass(), field);
+                        body.setSet(setter);
+                        value = rs.getDouble(name);
+                        setter.invoke(object, new Object[]{value});
+                        ignore = true;
+                    }
                 }
                 body.setColName(name);
 
