@@ -52,6 +52,7 @@ public class EntityDictionary {
 
         ArrayList array = new ArrayList();
         array.add(data.getTableName());
+        manager.getRef().executeAction(data.getAction().before(), object);
         String statement = "";
         manager.hasParent = false;
 
@@ -183,7 +184,8 @@ public class EntityDictionary {
         for (int i = manager.primaryKey.size() - 1; i >= primKeyItems; i--) {
             manager.primaryKey.removeElementAt(i);
         }
-        
+
+        manager.getRef().executeAction(data.getAction().after(), object);
         return array;
     }
 

@@ -21,4 +21,6 @@ public @interface Column {
     String setter() default "";
 
     boolean ignore() default false;
+
+    String summary() default "";
 }
