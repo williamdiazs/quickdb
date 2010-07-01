@@ -951,14 +951,16 @@ public class EntityManager {
             EntityDictionary dictionary = new EntityDictionary();
             if (dictionary.contains(object.getClass().getName())) {
                 Object[] data = dictionary.obtainDataOptimisticLock(object);
-                ResultSet rs = admin.getConex().select("SELECT optimisticLock FROM " +
-                        ((String)data[0]) + " WHERE " + ((String)data[1]) +
-                        "=" + data[2].toString());
-                if(rs.next()){
-                    long timestamp = rs.getLong(1);
-                    value = ( ((Long)data[3]) == timestamp );
-                    if(value){
-                        ((Method)data[4]).invoke(object, new Object[]{System.currentTimeMillis()});
+                if(data != null){
+                    ResultSet rs = admin.getConex().select("SELECT optimisticLock FROM " +
+                            ((String)data[0]) + " WHERE " + ((String)data[1]) +
+                            "=" + data[2].toString());
+                    if(rs.next()){
+                        long timestamp = rs.getLong(1);
+                        value = ( ((Long)data[3]) == timestamp );
+                        if(value){
+                            ((Method)data[4]).invoke(object, new Object[]{System.currentTimeMillis()});
+                        }
                     }
                 }
             }

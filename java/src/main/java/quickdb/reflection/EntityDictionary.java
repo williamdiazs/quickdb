@@ -43,14 +43,15 @@ public class EntityDictionary {
     }
 
     public Object[] obtainDataOptimisticLock(Object object){
-        Object[] data = new Object[5];
+        Object[] data = null;
         try{
             DictionaryData dictData = EntityDictionary.dict.get(object.getClass().getName());
-            data[0] = dictData.getTableName();
-            data[1] = dictData.getData().get(0).colName();
-            data[2] = dictData.getData().get(0).get().invoke(object, new Object[0]);
             for(DictionaryBody body : dictData.getData()){
                 if(body.fieldName().equalsIgnoreCase("optimisticLock")){
+                    data = new Object[5];
+                    data[0] = dictData.getTableName();
+                    data[1] = dictData.getData().get(0).colName();
+                    data[2] = dictData.getData().get(0).get().invoke(object, new Object[0]);
                     data[3] = body.get().invoke(object, new Object[0]);
                     data[4] = body.set();
                 }
