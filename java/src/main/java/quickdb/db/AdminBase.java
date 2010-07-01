@@ -1,7 +1,6 @@
 package quickdb.db;
 
 import java.security.InvalidParameterException;
-import quickdb.db.connection.ConnectionDB;
 import quickdb.db.dbms.DbmsInterpreter;
 import quickdb.db.dbms.mysql.ColumnDefined;
 import quickdb.db.dbms.mysql.DataType;

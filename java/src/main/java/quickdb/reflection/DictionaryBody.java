@@ -18,6 +18,7 @@ public class DictionaryBody {
     private Properties.TYPES dataType;
     private Class collectionClass;
     private Validation validation;
+    private String summary;
 
     DictionaryBody() {
         this.validation = null;
@@ -77,6 +78,14 @@ public class DictionaryBody {
 
     public void setValidation(Validation validation) {
         this.validation = validation;
+    }
+
+    public String summary() {
+        return summary;
+    }
+
+    public void setSummary(String summary) {
+        this.summary = summary;
     }
 
 }
