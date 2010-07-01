@@ -232,6 +232,8 @@ public final class StringQuery {
         StringBuilder mainCol = new StringBuilder();
 
         String table = StringQuery.ref.readTableName(clazz);
+        String summary = "";
+        String as = "";
 
         //Attributes
         Field fields[] = clazz.getDeclaredFields();
@@ -252,12 +254,22 @@ public final class StringQuery {
                     if (((Column) a).name().length() != 0) {
                         name = ((Column) a).name();
                     }
+                    if(((Column) a).summary().length() != 0){
+                        String summaryProp = ((Column) a).summary().trim();
+                        summary = summaryProp.substring(0, 1);
+                        name = StringQuery.ref.columnName(summaryProp.substring(1), clazz);
+                        as = "'" + f.getName() + "'";
+                    }
                     ignore = ((Column) a).ignore();
                     break;
                 }
             }
 
-            if (!ignore && !StringQuery.ref.implementsCollection(clazz, fieldName)) {
+            if(summary.length() != 0){
+                mainCol.append(summary + table + "." + name + ") " + as + ", ");
+                summary = "";
+                as = "";
+            }else if (!ignore && !StringQuery.ref.implementsCollection(clazz, fieldName)) {
                 mainCol.append(table + "." + name + ", ");
             }
         }
@@ -276,7 +288,28 @@ public final class StringQuery {
             mainCol.append(", " + table + ".parent_id");
         }
 
-        return mainCol.toString();
+        return StringQuery.includeSummaryColumns(mainCol.toString());
+    }
+
+    private static String includeSummaryColumns(String select){
+        String cols[] = select.split(",");
+        StringBuilder columns = new StringBuilder();
+        for(String col : cols){
+            if(col.contains("+")){
+                col = col.replace("+", "SUM(");
+            }else if(col.contains("%")){
+                col = col.replace("%", "AVG(");
+            }else if(col.contains(">")){
+                col = col.replace(">", "MAX(");
+            }else if(col.contains("<")){
+                col = col.replace("<", "MIN(");
+            }else if(col.contains("#")){
+                col = col.replace("#", "COUNT(");
+            }
+            columns.append("," + col);
+        }
+
+        return columns.toString().substring(1);
     }
 
     static String columnName(Class clazz, String field) {

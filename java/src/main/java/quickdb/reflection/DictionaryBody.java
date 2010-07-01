@@ -18,7 +18,7 @@ public class DictionaryBody {
     private Properties.TYPES dataType;
     private Class collectionClass;
     private Validation validation;
-    private String summary;
+    private boolean summary;
 
     DictionaryBody() {
         this.validation = null;
@@ -80,11 +80,11 @@ public class DictionaryBody {
         this.validation = validation;
     }
 
-    public String summary() {
+    public boolean summary() {
         return summary;
     }
 
-    public void setSummary(String summary) {
+    public void setSummary(boolean summary) {
         this.summary = summary;
     }
 

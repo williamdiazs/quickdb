@@ -81,6 +81,7 @@ public class EntityDictionary {
         manager.primaryKey.push(data.getData().get(0).colName());
         try{
             for(DictionaryBody body : data.getData()){
+                if(body.summary()) continue;
                 Object objs[] = new Object[2];
                 objs[0] = body.colName();
 
@@ -227,6 +228,11 @@ public class EntityDictionary {
         manager.primaryKey.push(data.getData().get(0).colName());
         try{
             for(DictionaryBody body : data.getData()){
+                if(body.summary()){
+                    value = rs.getDouble(body.colName());
+                    body.set().invoke(object, new Object[]{value});
+                    continue;
+                }
                 Object get = body.get().invoke(object, new Object[0]);
                 //When the object is not initialized
                 if (get == null) {

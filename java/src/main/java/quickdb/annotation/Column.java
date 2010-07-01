@@ -22,5 +22,12 @@ public @interface Column {
 
     boolean ignore() default false;
 
+    /*
+     * + : SUM
+     * % : AVG
+     * > : MAX
+     * < : MIN
+     * # : COUNT
+     */
     String summary() default "";
 }

@@ -379,4 +379,20 @@ public class ReflectionUtilities {
         }
     }
 
+    public String columnName(String field, Class clazz){
+        try{
+            Field f = clazz.getDeclaredField(field);
+            Annotation[] ann = f.getDeclaredAnnotations();
+            for(Annotation a : ann){
+                if(a instanceof Column &&
+                        ((Column)a).name().length() != 0){
+                    return ((Column)a).name();
+                }
+            }
+            return f.getName();
+        }catch(Exception e){
+            return "";
+        }
+    }
+
 }
