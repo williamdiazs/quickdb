@@ -15,6 +15,7 @@ import java.sql.SQLException;
 import java.util.Hashtable;
 import java.util.Stack;
 import quickdb.db.connection.IConnectionDB;
+import quickdb.exception.OptimisticLockException;
 import quickdb.reflection.EntityManager;
 
 /**
@@ -289,6 +290,9 @@ public class AdminBase {
      * @return True if the modification was successfull, False in the other case
      */
     public boolean modify(Object object) {
+        if(!this.manager.checkOptimisticLock(this, object)){
+            throw new OptimisticLockException();
+        }
         boolean value = false;
         try{
             boolean commitValue = this.commit;

@@ -42,6 +42,24 @@ public class EntityDictionary {
         }
     }
 
+    public Object[] obtainDataOptimisticLock(Object object){
+        Object[] data = new Object[5];
+        try{
+            DictionaryData dictData = EntityDictionary.dict.get(object.getClass().getName());
+            data[0] = dictData.getTableName();
+            data[1] = dictData.getData().get(0).colName();
+            data[2] = dictData.getData().get(0).get().invoke(object, new Object[0]);
+            for(DictionaryBody body : dictData.getData()){
+                if(body.fieldName().equalsIgnoreCase("optimisticLock")){
+                    data[3] = body.get().invoke(object, new Object[0]);
+                    data[4] = body.set();
+                }
+            }
+        }catch(Exception e){}
+
+        return data;
+    }
+
     public static void cleanDictionary(){
         EntityDictionary.dict = new Hashtable<String, DictionaryData>();
     }
@@ -52,7 +70,9 @@ public class EntityDictionary {
 
         ArrayList array = new ArrayList();
         array.add(data.getTableName());
-        manager.getRef().executeAction(data.getAction().before(), object);
+        if(data.getAction() != null){
+            manager.getRef().executeAction(data.getAction().before(), object);
+        }
         String statement = "";
         manager.hasParent = false;
 
@@ -185,7 +205,9 @@ public class EntityDictionary {
             manager.primaryKey.removeElementAt(i);
         }
 
-        manager.getRef().executeAction(data.getAction().after(), object);
+        if(data.getAction() != null){
+            manager.getRef().executeAction(data.getAction().after(), object);
+        }
         return array;
     }
 
