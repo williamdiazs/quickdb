@@ -92,7 +92,14 @@ public class Query implements IQuery {
                 clazz[i] = condition[i+1];
             }
             this.where.addCondition("AND");
-            String whereCondition = this.processRequest(field, clazz);
+            String whereCondition;
+            if(field.matches("[+|%|<|>|#]\\w+")){
+                String summary = field.substring(0, 1);
+                whereCondition = this.processRequest(field.substring(1), ((Object[]) clazz));
+                whereCondition = StringQuery.includeSummaryColumns(summary + whereCondition) + ")";
+            }else{
+                whereCondition = this.processRequest(field, clazz);
+            }
             if (this.having == null) {
                 this.where.addCondition(whereCondition);
                 return this.where;
@@ -115,7 +122,14 @@ public class Query implements IQuery {
                 clazz[i] = condition[i+1];
             }
             this.where.addCondition("OR");
-            String whereCondition = this.processRequest(field, clazz);
+            String whereCondition;
+            if(field.matches("[+|%|<|>|#]\\w+")){
+                String summary = field.substring(0, 1);
+                whereCondition = this.processRequest(field.substring(1), ((Object[]) clazz));
+                whereCondition = StringQuery.includeSummaryColumns(summary + whereCondition) + ")";
+            }else{
+                whereCondition = this.processRequest(field, clazz);
+            }
             if (this.having == null) {
                 this.where.addCondition(whereCondition);
                 return this.where;
@@ -158,7 +172,14 @@ public class Query implements IQuery {
         if (this.groupby != null) {
             this.having = Where.createWhere(this);
             this.groupby.append(" HAVING ");
-            String whereCondition = this.processRequest(field, ((Object[]) clazz));
+            String whereCondition;
+            if(field.matches("[+|%|<|>|#]\\w+")){
+                String summary = field.substring(0, 1);
+                whereCondition = this.processRequest(field.substring(1), ((Object[]) clazz));
+                whereCondition = StringQuery.includeSummaryColumns(summary + whereCondition) + ")";
+            }else{
+                whereCondition = this.processRequest(field, ((Object[]) clazz));
+            }
             this.having.addCondition(whereCondition);
         }
 
