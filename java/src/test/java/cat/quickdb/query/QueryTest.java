@@ -4,6 +4,11 @@ import quickdb.db.AdminBase;
 import cat.quickdb.query.model.AnotherClass;
 import cat.quickdb.query.model.AnotherParent;
 import cat.quickdb.query.model.CompleteQuery;
+import cat.quickdb.query.model.ObjectSubquery;
+import cat.quickdb.query.model.ObjectSummary;
+import cat.quickdb.query.model.QueryCollection;
+import cat.quickdb.query.model.QueryWithCollection;
+import cat.quickdb.query.model.QueryWithSubquery;
 import cat.quickdb.query.model.ReferenceQuery;
 import cat.quickdb.query.model.UserQuery;
 import cat.quickdb.tests.QuickDBTests;
@@ -233,6 +238,148 @@ public class QueryTest {
                 differenceWith(date.toString()).equal(2).findAll();
 
         Assert.assertEquals(1, array.size());
+    }
+
+    @Test
+    public void testQueryWithCollection(){
+        QueryWithCollection with = new QueryWithCollection();
+        with.setDescription("description");
+        ArrayList<QueryCollection> qu = new ArrayList<QueryCollection>();
+        qu.add(new QueryCollection(11));
+        qu.add(new QueryCollection(22));
+        qu.add(new QueryCollection(33));
+        with.setQueryCollection(qu);
+        Assert.assertTrue(admin.save(with));
+
+        QueryWithCollection with2 = new QueryWithCollection();
+        with2.setDescription("description2");
+        ArrayList<QueryCollection> qu2 = new ArrayList<QueryCollection>();
+        qu2.add(new QueryCollection(44));
+        qu2.add(new QueryCollection(55));
+        qu2.add(new QueryCollection(66));
+        with2.setQueryCollection(qu2);
+        Assert.assertTrue(admin.save(with2));
+
+        QueryWithCollection with3 = new QueryWithCollection();
+        admin.obtain(with3).If("value", QueryCollection.class, "queryCollection").equal(22).find();
+
+        Assert.assertEquals("description", with3.getDescription());
+        Assert.assertEquals(33, with3.getQueryCollection().get(2).getValue());
+    }
+
+    @Test
+    public void testSubQuery(){
+        QueryWithSubquery sub = new QueryWithSubquery();
+        sub.setName("subQuery1");
+        sub.setSubQuery(new ObjectSubquery("name1"));
+        Assert.assertTrue(admin.save(sub));
+
+        QueryWithSubquery sub2 = new QueryWithSubquery();
+        sub2.setName("subQuery2");
+        sub2.setSubQuery(new ObjectSubquery("subQuery2"));
+        Assert.assertTrue(admin.save(sub2));
+
+        QueryWithSubquery sub3 = new QueryWithSubquery();
+        sub3.setName("subQuery3");
+        sub3.setSubQuery(new ObjectSubquery("name3"));
+        Assert.assertTrue(admin.save(sub3));
+
+        QueryWithSubquery sub4 = new QueryWithSubquery();
+        admin.obtain(sub4).If().For("value", ObjectSubquery.class).closeFor().in("name", QueryWithSubquery.class).find();
+
+        Assert.assertEquals("subQuery2", sub4.getName());
+        Assert.assertEquals("subQuery2", sub4.getSubQuery().getValue());
+
+        QueryWithSubquery sub5 = new QueryWithSubquery();
+        admin.obtain(sub5).If("id").greater(0).and().For("value", ObjectSubquery.class).
+                closeFor().in("name", QueryWithSubquery.class).find();
+
+        Assert.assertEquals("subQuery2", sub5.getName());
+        Assert.assertEquals("subQuery2", sub5.getSubQuery().getValue());
+    }
+
+    @Test
+    public void testSummaryAttributes(){
+        if(this.admin.checkTableExist("ObjectSummary")){
+            this.admin.executeQuery("DROP TABLE ObjectSummary");
+        }
+
+        ObjectSummary summ = new ObjectSummary();
+        summ.setValue(23);
+        summ.setSalary(100.5);
+        Assert.assertTrue(admin.save(summ));
+
+        ObjectSummary summ2 = new ObjectSummary();
+        summ2.setValue(5);
+        summ2.setSalary(500.5);
+        Assert.assertTrue(admin.save(summ2));
+
+        ObjectSummary summ3 = new ObjectSummary();
+        summ3.setValue(34);
+        summ3.setSalary(200);
+        Assert.assertTrue(admin.save(summ3));
+
+        ObjectSummary summ4 = new ObjectSummary();
+        admin.obtain(summ4).If("value").greater(2).find();
+        Assert.assertEquals(62.0, summ4.getSummmary());
+        Assert.assertEquals(267.0, summ4.getPromSalary());
+        Assert.assertEquals(34.0, summ4.getMaxValue());
+        Assert.assertEquals(5.0, summ4.getMinValue());
+        Assert.assertEquals(3.0, summ4.getCountValue());
+
+        ObjectSummary summ5 = new ObjectSummary();
+        admin.obtain(summ5, "value > 10");
+        Assert.assertEquals(57.0, summ5.getSummmary());
+        Assert.assertEquals(150.25, summ5.getPromSalary());
+        Assert.assertEquals(34.0, summ5.getMaxValue());
+        Assert.assertEquals(23.0, summ5.getMinValue());
+        Assert.assertEquals(2.0, summ5.getCountValue());
+    }
+
+    @Test
+    public void testQueryIfGroupWithSummary(){
+        if(this.admin.checkTableExist("ObjectSummary")){
+            Assert.assertTrue(this.admin.executeQuery("DROP TABLE ObjectSummary"));
+        }
+
+        ObjectSummary summ = new ObjectSummary();
+        summ.setValue(23);
+        summ.setSalary(100.5);
+        Assert.assertTrue(admin.save(summ));
+
+        ObjectSummary summ2 = new ObjectSummary();
+        summ2.setValue(5);
+        summ2.setSalary(500.5);
+        Assert.assertTrue(admin.save(summ2));
+
+        ObjectSummary summ3 = new ObjectSummary();
+        summ3.setValue(34);
+        summ3.setSalary(200);
+        Assert.assertTrue(admin.save(summ3));
+
+        ObjectSummary summ4 = new ObjectSummary();
+        summ4.setValue(23);
+        summ4.setSalary(10);
+        Assert.assertTrue(admin.save(summ4));
+
+        ObjectSummary summ5 = new ObjectSummary();
+        summ5.setValue(5);
+        summ5.setSalary(55);
+        Assert.assertTrue(admin.save(summ5));
+
+        ObjectSummary summ6 = new ObjectSummary();
+        summ6.setValue(34);
+        summ6.setSalary(800);
+        Assert.assertTrue(admin.save(summ6));
+
+        ObjectSummary summ7 = new ObjectSummary();
+        admin.obtain(summ7).If("id").greater(0).group("value").ifGroup("+salary").greater(900).find();
+
+        Assert.assertEquals(34.0, summ7.getMaxValue());
+        Assert.assertEquals(34.0, summ7.getMinValue());
+        Assert.assertEquals(2.0, summ7.getCountValue());
+        Assert.assertEquals(500.0, summ7.getPromSalary());
+        Assert.assertEquals(68.0, summ7.getSummmary());
     }
 
 }
