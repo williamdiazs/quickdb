@@ -291,7 +291,7 @@ public final class StringQuery {
         return StringQuery.includeSummaryColumns(mainCol.toString());
     }
 
-    private static String includeSummaryColumns(String select){
+    public static String includeSummaryColumns(String select){
         String cols[] = select.split(",");
         StringBuilder columns = new StringBuilder();
         for(String col : cols){

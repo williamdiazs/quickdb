@@ -288,6 +288,7 @@ public class EntityManager {
         }
 
         String table1 = this.readClassName(object);
+        this.executeAfter.pop();
         dictionary.newDictObject(table1, hasParent, null);
         boolean tempParent = this.hasParent;
         this.hasParent = false;
