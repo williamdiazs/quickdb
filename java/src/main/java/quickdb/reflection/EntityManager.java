@@ -85,7 +85,7 @@ public class EntityManager {
         boolean ignore = false;
         String statement = "";
 
-        String tableName = this.readClassName(object);
+        String tableName = this.readClassName(object, true);
         dictionary.newDictObject(tableName, hasParent, this.action);
         this.action = null;
         array.add(tableName);
@@ -287,8 +287,7 @@ public class EntityManager {
         } catch (DictionaryIncompleteException excep) {
         }
 
-        String table1 = this.readClassName(object);
-        this.executeAfter.pop();
+        String table1 = this.readClassName(object, false);
         dictionary.newDictObject(table1, hasParent, null);
         boolean tempParent = this.hasParent;
         this.hasParent = false;
@@ -337,8 +336,10 @@ public class EntityManager {
                         body.setSummary(true);
                         Method setter = this.ref.obtainSetter(object.getClass(), field);
                         body.setSet(setter);
-                        value = rs.getDouble(name);
-                        setter.invoke(object, new Object[]{value});
+                        try{
+                            value = rs.getDouble(name);
+                            setter.invoke(object, new Object[]{value});
+                        }catch(Exception e){}
                         ignore = true;
                     }
                 }
@@ -524,7 +525,7 @@ public class EntityManager {
         boolean primary = false;
         boolean collectionBool;
 
-        array.add(this.readClassName(object));
+        array.add(this.ref.readTableName(object.getClass()));
 
         Field fields[] = object.getClass().getDeclaredFields();
         for (int i = 0; i < fields.length; i++) {
@@ -642,7 +643,7 @@ public class EntityManager {
         return index;
     }
 
-    private String readClassName(Object object) {
+    private String readClassName(Object object, boolean value) {
         this.hasParent = false;
         Annotation entity[] = object.getClass().getAnnotations();
         String entityName = object.getClass().getSimpleName();
@@ -651,9 +652,11 @@ public class EntityManager {
                 if(((Table) entity[i]).value().length() != 0) {
                     entityName = ((Table) entity[i]).value();
                 }
-                this.ref.executeAction(((Table) entity[i]).before(), object);
-                this.executeAfter.push(((Table) entity[i]).after());
-                this.action = ((Table) entity[i]);
+                if(value){
+                    this.ref.executeAction(((Table) entity[i]).before(), object);
+                    this.executeAfter.push(((Table) entity[i]).after());
+                    this.action = ((Table) entity[i]);
+                }
             } else if (entity[i] instanceof Parent) {
                 this.hasParent = true;
             }
@@ -804,8 +807,8 @@ public class EntityManager {
                 if ((type != null) && !this.ref.checkPrimitivesExtended(type.getClass(), ann)) {
                     Object value = getter.invoke(obj, new Object[0]);
                     if (value == null) {
-                        String table1 = this.readClassName(obj);
-                        String table2 = this.readClassName(type);
+                        String table1 = this.ref.readTableName(obj.getClass());
+                        String table2 = this.ref.readTableName(type.getClass());
                         String idName1 = this.ref.checkIndex(obj.getClass());
                         String idName2 = this.ref.checkIndex(type.getClass());
                         Method getIdValue = this.ref.obtainGetter(obj.getClass(), idName1);

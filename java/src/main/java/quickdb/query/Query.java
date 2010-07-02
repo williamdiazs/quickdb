@@ -65,12 +65,22 @@ public class Query implements IQuery {
         this.object = obj;
     }
 
-    public Where If(String field, Object... clazz) {
+    public Where If(Object... condition) {
         if (this.where == null) {
             this.where = Where.createWhere(this);
         }
-        String whereCondition = this.processRequest(field, clazz);
-        this.where.addCondition(whereCondition);
+        if(condition.length == 0){
+            this.where.waitForSub();
+            return this.where;
+        }else{
+            String field = String.valueOf(condition[0]);
+            Object[] clazz = new Object[condition.length-1];
+            for(int i = 0; i < condition.length-1; i++){
+                clazz[i] = condition[i+1];
+            }
+            String whereCondition = this.processRequest(field, clazz);
+            this.where.addCondition(whereCondition);
+        }
 
         return this.where;
     }
@@ -311,8 +321,8 @@ public class Query implements IQuery {
             String fieldResult;
             if (clazz.length == 2) {
                 fieldResult = String.valueOf(clazz[1]);
-                int inherRef = StringQuery.inheritedAttribute(this.obtainClassBase(), fieldResult);
                 clazzResult = this.obtainClassBase();
+                int inherRef = StringQuery.inheritedAttribute(clazzResult, fieldResult);
                 for(int i=0; i < inherRef; i++){clazzResult = clazzResult.getSuperclass();}
                 this.checkForCollection(clazzResult, fieldResult);
             } else {
@@ -320,7 +330,7 @@ public class Query implements IQuery {
                 clazzResult = (Class) result[0];
                 fieldResult = String.valueOf(result[1]);
             }
-            if (fieldResult.equalsIgnoreCase("")) {
+            if (fieldResult.length() == 0) {
                 this.addStartFrom(this.reflec.readTableName(c) + ", ");
             } else if ((clazzResult != this.obtainClassBase())) {
                 int inherit = 0;
@@ -369,18 +379,20 @@ public class Query implements IQuery {
             String table2 = this.reflec.readTableName(clazz2);
             String index1 = this.reflec.checkIndex(clazz);
             String index2 = this.reflec.checkIndex(clazz2);
-            String table = table1 + table2;
+            String tableName = table1 + table2 + 
+                    field.substring(0, 1).toUpperCase() + field.substring(1);
             String col1 = "base";
             String col2 = "related";
             if(!this.admin.checkTableExist(table)){
-                table = table2 + table1;
+                tableName = table2 + field.substring(0, 1).toUpperCase() +
+                    field.substring(1) + table1;
                 col1 = "related";
                 col2 = "base";
             }
             this.from.append(" JOIN " +
-                    table + " ON " + table + "." + col1 + " = " + table1 + "." + index1 +
+                    tableName + " ON " + tableName + "." + col1 + " = " + table1 + "." + index1 +
                     " JOIN " + table2 + " ON " + table2 + "." + index2 + " = " +
-                    table + "." + col2);
+                    tableName + "." + col2);
         }
     }
 
