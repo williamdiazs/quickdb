@@ -6,14 +6,12 @@ import quickdb.complexDataStructure.DataStructureTest;
 import quickdb.date200912.TestsOperations;
 import quickdb.db.AdminBase;
 import quickdb.db.AdminBase.DATABASE;
-import quickdb.db.AdminThread;
 import quickdb.features20100702.FeaturesTest;
 import quickdb.invalid.InvalidTest;
 import quickdb.operations.ComplexOperationsTest;
 import quickdb.operations.OperationsTest;
 import quickdb.primitiveCollection.PrimitiveCollectionTest;
 import quickdb.query.QueryTest;
-import quickdb.thread.ThreadTest;
 import quickdb.validation.ValidationTest;
 import quickdb.view.ViewTest;
 
