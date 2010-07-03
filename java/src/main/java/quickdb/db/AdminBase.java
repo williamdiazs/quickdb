@@ -39,7 +39,7 @@ public class AdminBase {
 
     public enum DATABASE {
 
-        MYSQL, POSTGRES, SQLSERVER, SQLite, FIREBIRD
+        MYSQL, POSTGRES, SQLSERVER, SQLite, FIREBIRD, MariaDB
     };
 
     protected AdminBase(DATABASE db, String... args) {

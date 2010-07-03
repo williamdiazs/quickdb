@@ -32,7 +32,7 @@ public class OperationsTest {
     public void configure() {
         this.admin = AdminBase.initialize(QuickDBTests.db, QuickDBTests.host,
                 QuickDBTests.port, QuickDBTests.instanceDB,
-                QuickDBTests.user, QuickDBTests.pass);
+                QuickDBTests.user, QuickDBTests.pass, QuickDBTests.scheme);
         this.admin.setAutoCommit(true);
     }
 

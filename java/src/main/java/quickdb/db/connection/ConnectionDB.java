@@ -61,8 +61,8 @@ public class ConnectionDB implements IConnectionDB{
     @Override
     public void connectSQLServer() {
         this.driver = "com.microsoft.sqlserver.jdbc.SQLServerDriver";
-        this.url = "jdbc:microsoft:sqlserver://" + host + ":" + port + ";" +
-                "database=" + nameDB;
+        this.url = "jdbc:sqlserver://" + host + ":" + port + ";" +
+                "databaseName=" + nameDB;
         this.connect();
     }
 
