@@ -24,6 +24,7 @@ public class DbmsInterpreter {
         DbmsInterpreter.properties = args;
         ConnectionDB conex = null;
         switch (db) {
+            case MariaDB:
             case MYSQL:
                 conex = new ConnectionDB(args);
                 conex.connectMySQL();

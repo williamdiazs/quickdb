@@ -16,7 +16,7 @@ public class ThreadTest {
     public void configure() {
         this.admin = new AdminThread(QuickDBTests.db, QuickDBTests.host,
                 QuickDBTests.port, QuickDBTests.instanceDB,
-                QuickDBTests.user, QuickDBTests.pass);
+                QuickDBTests.user, QuickDBTests.pass, QuickDBTests.scheme);
     }
     
     @Test
