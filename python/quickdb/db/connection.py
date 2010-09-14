@@ -50,7 +50,22 @@ class ConnectionDB:
             self._cursor.execute("INSERT INTO "+tablename+"(" + ",".join(data[0]) + ")"\
             " VALUES (" + ("%s,"*len(data[1]))[:-1] + ")", data[1])
         except (Exception), e:
-            print "insert_row",e
+            print "insert_row error:",e
+
+    def update(self):
+        pass
+
+    def delete(self, tablename, where):
+        try:
+            self._cursor.execute("DELETE FROM "+tablename+" WHERE "+where)
+        except (Exception), e:
+            print "delete error:",e
+
+    def select(self):
+        try:
+            pass
+        except (Exception), e:
+            pass
 
     def commit(self):
         try:
@@ -60,13 +75,14 @@ class ConnectionDB:
 
 if __name__ == '__main__':
     import datetime
-    conn_db = ConnectionDB(namedb='test', user='root')
+    conn_db = ConnectionDB(namedb='quickdb', user='quickdb', password='quickdb')
     conn_db.connect_mysql()
     col = ['nombre','fecha', 'salary', 'date']
     import datetime
     val = ['analisis', 234, 50.69, datetime.date.today()]
     data = [col, val]
     conn_db.insert_row('libro', data)
+#    conn_db.delete('libro', 'nombre="analisis"')
     conn_db.commit()
     conn_db.close_connection()
 
