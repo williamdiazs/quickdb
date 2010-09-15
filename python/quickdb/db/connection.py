@@ -45,44 +45,88 @@ class ConnectionDB:
             print "Error trying close the cursor or connection with db", e
 
     def insert_row(self, tablename, data):
-        """Insert a row in a table"""
+        """Insert a row in a table
+        @param String tablename
+        @param List data"""
         try:
-            self._cursor.execute("INSERT INTO "+tablename+"(" + ",".join(data[0]) + ")"\
+            self._cursor.execute("INSERT INTO "+ tablename + "(" + ",".join(data[0]) + ")"\
             " VALUES (" + ("%s,"*len(data[1]))[:-1] + ")", data[1])
         except (Exception), e:
             print "insert_row error:",e
 
-    def update(self):
+    def update(self, tablenames):
+        """Update a row in a table
+        @param String tablename"""
         pass
 
     def delete(self, tablename, where):
+        """Delete a row in a table
+        @param String tablename
+        @param String where"""
         try:
-            self._cursor.execute("DELETE FROM "+tablename+" WHERE "+where)
+            self._cursor.execute("DELETE FROM "+ tablename +" WHERE "+ where)
         except (Exception), e:
             print "delete error:",e
 
-    def select(self):
+    def select(self, select):
+        """Query select with the complete string query
+        @param String select
+        return check _cursor methods fetchone, fetchmany o fetchall"""
         try:
-            pass
+            self._cursor.execute(select)
         except (Exception), e:
-            pass
+            print "select error:",e
+
+    def select_where(self, tablename, where):
+        """Query select with only where clausule
+        @param String tablename
+        @param String where
+        return check _cursor methods fetchone, fetchmany o fetchall"""
+        try:
+            self._cursor.execute("SELECT * FROM " + tablename + " WHERE " + where)
+        except (Exception), e:
+            print "select_where error:",e
 
     def commit(self):
+        """Commit the transactions"""
         try:
             self._connection.commit()
         except (Exception), e:
-            print "Commit exception:",e
+            print "commit error:",e
 
 if __name__ == '__main__':
-    import datetime
+
+    import datetime,random
+    #create the connection
     conn_db = ConnectionDB(namedb='quickdb', user='quickdb', password='quickdb')
     conn_db.connect_mysql()
+
+    #some data test
+    nombres = ["pab","tsb","aed","pdp","gda"]
     col = ['nombre','fecha', 'salary', 'date']
-    import datetime
-    val = ['analisis', 234, 50.69, datetime.date.today()]
+    #~ import datetime
+    val = [ nombres[random.randint(0, 4)], random.randint(1000, 2000), 50.69, datetime.date.today()]
     data = [col, val]
-    conn_db.insert_row('libro', data)
-#    conn_db.delete('libro', 'nombre="analisis"')
+
+    #test insert_row method
+    #conn_db.insert_row('libro', data)
+
+    #test the select method
+    #~ conn_db.select("SELECT * FROM libro")
+    #~ for tupla in conn_db._cursor.fetchall():
+        #~ print tupla
+
+    #test the select_where method
+    #~ conn_db.select_where("libro", "nombre='aed'")
+    #~ for tupla in conn_db._cursor.fetchall():
+        #~ print tupla
+
+    #test delete method
+    #conn_db.delete('libro', 'nombre="analisis"')
+
+    #test the commit method
     conn_db.commit()
+
+    #test the close_connection method
     conn_db.close_connection()
 
